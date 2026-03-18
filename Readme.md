@@ -12,7 +12,7 @@
 
 ---
 
-# ?? Table of Contents
+# Table of Contents
 
 * [System Requirements](#-system-requirements)
 * [Architecture Overview](#-architecture-overview)
@@ -29,7 +29,7 @@
 
 ---
 
-# ??? System Requirements
+# System Requirements
 
 | Component | Minimum        | Recommended      |
 | --------- | -------------- | ---------------- |
@@ -41,7 +41,7 @@
 
 ---
 
-# ?? Architecture Overview
+# Architecture Overview
 
 ```mermaid
 flowchart LR
@@ -53,7 +53,7 @@ flowchart LR
 
 ---
 
-# ?? Prerequisites & Setup
+# Prerequisites & Setup
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -84,7 +84,7 @@ sudo apt install nvidia-cuda-toolkit
 
 ---
 
-# ?? Hermes Agent Installation
+# Hermes Agent Installation
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
@@ -105,7 +105,7 @@ LLM_MODEL: Qwen3.5-9B-Q5_K_M
 
 ---
 
-# ?? llama.cpp Installation
+# llama.cpp Installation
 
 ## Recommended Path
 
@@ -140,7 +140,7 @@ rm -rf build
 
 ---
 
-# ?? Model Setup (Qwen3.5)
+# Model Setup (Qwen3.5)
 
 This will be created at your home directory
 
@@ -172,7 +172,7 @@ wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q5_K
 
 ---
 
-# ?? Running the Server
+# Running the Server
 
 ```bash
 /opt/llama.cpp/build/bin/llama-server \
@@ -187,7 +187,7 @@ wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q5_K
 
 ---
 
-# ?? Usage Examples
+# Usage Examples
 
 ## API (OpenAI Compatible)
 
@@ -266,7 +266,7 @@ hermes gateway
 
 ---
 
-# ?? Performance & Memory
+# Performance & Memory
 
 ## Memory Breakdown
 
