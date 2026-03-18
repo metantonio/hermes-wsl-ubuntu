@@ -1,4 +1,4 @@
-# ?? Hermes Agent + llama.cpp + Qwen3.5 Integration Guide
+# Hermes Agent + llama.cpp + Qwen3.5 Integration Guide
 
 ![Status](https://img.shields.io/badge/status-production--ready-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-WSL2%20%2B%20Linux-blue)
