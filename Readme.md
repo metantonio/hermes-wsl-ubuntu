@@ -117,7 +117,7 @@ sudo mkdir -p /opt/llama.cpp
 sudo chown -R $USER:$USER /opt/llama.cpp
 
 cd /opt/llama.cpp
-git clone https://github.com/ggerganov/llama.cpp.git .
+git clone https://github.com/ggerganov/llama.cpp.git
 ```
 
 ## Build with CUDA
@@ -224,7 +224,7 @@ curl http://localhost:8080/v1/completions \
     -m /home/antonio/models/Qwen3.5-9B-Instruct-Q5_K_M.gguf \
     -c 8192 -n 4096 -ngl 32 \
     --port 8080 \
-    --host 0.0.0.0 \
+    --host 127.0.0.1 \
     --threads 8 \
     --flash-attn 1 \
     --cache-type-k q4_0
@@ -238,7 +238,7 @@ curl http://localhost:8080/v1/completions \
     -c 131072 -n 4096 -ngl 34 \
     -np 1 -fa on \
     --port 8080 \
-    --host 0.0.0.0 \
+    --host 127.0.0.1 \
     --threads 8 \
     --flash-attn 1 \
     --cache-type-k q4_0 
@@ -251,7 +251,7 @@ curl http://localhost:8080/v1/completions \
     -m /home/antonio/models/Qwen3.5-9B-Instruct-Q4_K_M.gguf \
     -c 4096 -n 2048 -ngl 32 \
     --port 8080 \
-    --host 0.0.0.0 \
+    --host 127.0.0.1 \
     --threads 12 \
     --flash-attn 1 \
     --cache-type-k q4_0 
@@ -356,13 +356,13 @@ Note: QWEN3.5-14B has 40 Layers.
 | `-n` | 4096 | Max output tokens |
 | `--ngl` | 32 | Layers on GPU (depends of LLM used) |
 | `--port` | 8080 | Server port |
-| `--host` | 0.0.0.0 | Listen on all interfaces |
+| `--host` | 127.0.0.1 | Listen on localhost |
 | `--threads` | 8 | CPU threads for parallelization |
 | `--flash-attn` | 1 | Enable Flash Attention (speed boost) |
 
 ---
 
-# ?? Troubleshooting
+# Troubleshooting
 
 ## CUDA Out of Memory
 
@@ -391,7 +391,7 @@ wsl --update
 
 ---
 
-# ? Optimization Tips
+# Optimization Tips
 
 ## Context vs Performance
 
@@ -414,7 +414,7 @@ graph LR
 
 ---
 
-# ?? Best Practices
+# Best Practices
 
 ## Model Strategy
 
@@ -439,7 +439,7 @@ chmod 755 /opt/llama.cpp/build/bin/llama-server
 
 ---
 
-# ?? Workflow
+# Workflow
 
 ```mermaid
 sequenceDiagram
@@ -458,7 +458,7 @@ sequenceDiagram
 
 ---
 
-# ? Production Checklist
+# Production Checklist
 
 * [ ] GPU working (`nvidia-smi`)
 * [ ] llama.cpp built with CUDA
@@ -470,10 +470,10 @@ sequenceDiagram
 
 ---
 
-# ?? Resources
+# Resources
 
-* llama.cpp ? [https://github.com/ggerganov/llama.cpp](https://github.com/ggerganov/llama.cpp)
-* Hermes Agent ? [https://hermes-agent.nousresearch.com/](https://hermes-agent.nousresearch.com/)
-* Qwen Models ? [https://huggingface.co/Qwen](https://huggingface.co/Qwen)
+* llama.cpp  [https://github.com/ggerganov/llama.cpp](https://github.com/ggerganov/llama.cpp)
+* Hermes Agent  [https://hermes-agent.nousresearch.com/](https://hermes-agent.nousresearch.com/)
+* Qwen Models  [https://huggingface.co/Qwen](https://huggingface.co/Qwen)
 
 ---
