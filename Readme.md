@@ -154,6 +154,8 @@ cd ~/models
 wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q5_K_M.gguf?download=true
 ```
 
+Other models links that you could consider: https://huggingface.co/Tesslate/OmniCoder-9B-GGUF/resolve/main/omnicoder-9b-q5_k_m.gguf?download=true
+
 ## Notes
 
 ### Model Sizes Comparison
