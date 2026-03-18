@@ -97,7 +97,7 @@ curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scri
 hermes setup
 ```
 
-And edit this values:
+And edit these values:
 
 ```bash
 hermes config set OPENAI_BASE_URL http://localhost:8080/v1
