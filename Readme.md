@@ -93,14 +93,17 @@ curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scri
 ### Config
 
 ```bash
-hermes config create --provider llama-cpp
-nano ~/.hermes/config.yaml
+# Do the setup to create the necessary files
+hermes setup
 ```
 
-```yaml
-OPENAI_BASE_URL: http://localhost:8080/v1
-OPENAI_API_KEY: dummy
-LLM_MODEL: Qwen3.5-9B-Q5_K_M
+And edit this values:
+
+```bash
+hermes config set OPENAI_BASE_URL http://localhost:8080/v1
+hermes config set OPENAI_API_KEY dummy
+hermes config set LLM_MODEL Qwen3.5-9B-Q5_K_M
+hermes config set TELEGRAM_BOT_TOKEN Your_Telegram_API_Token
 ```
 
 ---
