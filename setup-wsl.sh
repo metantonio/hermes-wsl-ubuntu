@@ -5,7 +5,7 @@ set -e
 AI_OPT_DIR="/opt/llamaCPP"
 MODEL_DIR="$HOME/models"
 
-echo "🔐 Requesting sudo permissions..."
+echo "Requesting sudo permissions..."
 sudo -v
 
 # Keep sudo alive
@@ -34,7 +34,7 @@ if command -v nvidia-smi &> /dev/null; then
         nvcc --version
         USE_CUDA=true
     else
-        echo "⚠️ CUDA not found — installing..."
+        echo "CUDA not found — installing..."
 
         # ----------------------------
         # CUDA install for WSL2
@@ -59,24 +59,24 @@ if command -v nvidia-smi &> /dev/null; then
         fi
     fi
 else
-    echo "🧠 No GPU detected — using CPU"
+    echo "No GPU detected — using CPU"
 fi
 
 # ----------------------------
 # 🧠 Install llama.cpp in /opt
 # ----------------------------
 if [ ! -d "$AI_OPT_DIR" ]; then
-    echo "📥 Cloning llama.cpp into /opt..."
+    echo "Cloning llama.cpp into /opt..."
     sudo git clone https://github.com/ggerganov/llama.cpp.git "$AI_OPT_DIR"
 fi
 
 cd "$AI_OPT_DIR"
 
 if [ "$USE_CUDA" = true ]; then
-    echo "⚡ Building with CUDA"
+    echo "Building with CUDA"
     sudo cmake -B build -DGGML_CUDA=ON
 else
-    echo "🧠 Building CPU version"
+    echo "Building CPU version"
     sudo cmake -B build
 fi
 
@@ -85,7 +85,7 @@ sudo cmake --build build --config Release
 # ----------------------------
 # 🔐 Permissions (IMPORTANT)
 # ----------------------------
-echo "🔐 Setting permissions..."
+echo "Setting permissions..."
 
 sudo chmod -R 755 "$AI_OPT_DIR/build/bin/llama-server"
 
@@ -102,21 +102,32 @@ cd "$MODEL_DIR"
 
 echo ""
 echo "📥 Model options:"
-echo "1) Qwen3.5-9B-Q4_K_M.gguf"
-echo "2) Skip"
+echo "1) Qwen3.5-9B-Q4_K_M.gguf (5.5 GB)"
+echo "2) Qwen3.5-9B-Q5_K_M.gguf (6.5 GB)"
+echo "3) Omnicoder:9B-Q4_K_M.gguf (6.52 GB)"
+echo "4) Skip"
 read -p "Choose [1-2]: " choice
 
 if [ "$choice" == "1" ]; then
-    echo "⬇️ Downloading model..."
+    echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf
 fi
 
+if [ "$choice" == "2" ]; then
+    echo "Downloading model..."
+    wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q5_K_M.gguf
+fi
+
+if [ "$choice" == "3" ]; then
+    echo "Downloading model..."
+    wget https://huggingface.co/Tesslate/OmniCoder-9B-GGUF/resolve/main/omnicoder-9b-q5_k_m.gguf
+fi
 
 # ----------------------------
 # ✅ Done
 # ----------------------------
 echo ""
-echo "🎉 Setup complete!"
+echo "Setup complete!"
 cd "$HOME"
 echo ""
 echo "Please complete the hermes setup manually, doing:"
