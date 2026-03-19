@@ -120,10 +120,19 @@ cd /opt/llama.cpp
 git clone https://github.com/ggerganov/llama.cpp.git
 ```
 
-## Build with CUDA
+## Build with CUDA (you need a NVIDIA GPU)
 
 ```bash
 cmake -B build -DGGML_CUDA=ON
+cmake --build build --config Release
+```
+
+## Build with CPU (your CPU needs to have AVX2 instructions, basically any CPU since 2020)
+
+This will make the inference slower, but still functional:
+
+```bash
+cmake -B build
 cmake --build build --config Release
 ```
 
