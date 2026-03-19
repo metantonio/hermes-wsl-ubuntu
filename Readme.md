@@ -56,7 +56,9 @@ flowchart LR
 
 # Automatic installation
 
+```bash
 curl -fsSL https://raw.githubusercontent.com/metantonio/hermes-wsl-ubuntu/master/setup-wsl.sh | bash
+```
 
 ---
 
