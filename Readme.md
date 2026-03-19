@@ -14,18 +14,18 @@
 
 # Table of Contents
 
-* [System Requirements](#-system-requirements)
-* [Architecture Overview](#-architecture-overview)
-* [Prerequisites & Setup](#-prerequisites--setup)
-* [Hermes Agent Installation](#-hermes-agent-installation)
-* [llama.cpp Installation](#-llamacpp-installation)
-* [Model Setup (Qwen3.5)](#-model-setup-qwen35)
-* [Running the Server](#-running-the-server)
-* [Usage Examples](#-usage-examples)
-* [Performance & Memory](#-performance--memory)
-* [Troubleshooting](#-troubleshooting)
-* [Optimization Tips](#-optimization-tips)
-* [Best Practices](#-best-practices)
+* [System Requirements](#system-requirements)
+* [Architecture Overview](#architecture-overview)
+* [Prerequisites & Setup](#prerequisites--setup)
+* [Hermes Agent Installation](#hermes-agent-installation)
+* [llama.cpp Installation](#llamacpp-installation)
+* [Model Setup (Qwen3.5)](#model-setup-qwen35)
+* [Running the Server](#running-the-server)
+* [Usage Examples](#usage-examples)
+* [Performance & Memory](#performance--memory)
+* [Troubleshooting](#troubleshooting)
+* [Optimization Tips](#optimization-tips)
+* [Best Practices](#best-practices)
 
 ---
 
@@ -136,7 +136,7 @@ cmake -B build
 cmake --build build --config Release
 ```
 
-Note that for CPU, you may want to install [BLAS](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md#blas-build) to accelerated inference using **.ggml** LLM models, not .gguf 
+Note that for CPU, you may want to install [BLAS](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md#blas-build) for accelerated inference using **.ggml** LLM models, not .gguf 
 
 ## Note:
 
