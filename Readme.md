@@ -55,6 +55,10 @@ flowchart LR
 
 # Prerequisites & Setup
 
+If you are in Windows, read and install [WSL2 - Ubuntu](./WSL2.md)
+
+In Ubuntu:
+
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y build-essential cmake git curl wget htop
