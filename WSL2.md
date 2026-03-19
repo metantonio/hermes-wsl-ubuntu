@@ -171,4 +171,4 @@ Restart your computer and try again.
 
 ## Support
 
-If this guide helped you, consider giving the repo a ?!
+If this guide helped you, consider giving the repo a star
