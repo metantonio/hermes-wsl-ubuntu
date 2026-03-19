@@ -162,10 +162,12 @@ This will be created at your home directory
 mkdir -p ~/models
 cd ~/models
 
-wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q5_K_M.gguf?download=true
+wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q5_K_M.gguf
 ```
 
-Other models links that you could consider: https://huggingface.co/Tesslate/OmniCoder-9B-GGUF/resolve/main/omnicoder-9b-q5_k_m.gguf?download=true
+Other models links that you could consider: https://huggingface.co/Tesslate/OmniCoder-9B-GGUF/resolve/main/omnicoder-9b-q5_k_m.gguf
+
+Note: You may want to check huggingface for QWEN3.5 models of 0.8B, 2B and 4B if you want to run this with CPU at reasonable speed
 
 ## Notes
 
