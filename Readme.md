@@ -16,6 +16,7 @@
 
 * [System Requirements](#system-requirements)
 * [Architecture Overview](#architecture-overview)
+* [Automatic installation](#automatic-installation)
 * [Prerequisites & Setup](#prerequisites--setup)
 * [Hermes Agent Installation](#hermes-agent-installation)
 * [llama.cpp Installation](#llamacpp-installation)
@@ -50,6 +51,12 @@ flowchart LR
     LlamaServer --> Model[Qwen3.5 GGUF]
     Model --> GPU[GPU / CPU]
 ```
+
+---
+
+#Automatic installation
+
+curl -fsSL https://raw.githubusercontent.com/metantonio/hermes-wsl-ubuntu/master/setup-wsl.sh | bash
 
 ---
 
