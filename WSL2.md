@@ -1,7 +1,3 @@
-Here’s a clean, beginner-friendly **GitHub README** you can use. It’s written step-by-step for non-technical users, with clear explanations and copy-paste commands.
-
----
-
 # ?? Install WSL2 on Windows (Step-by-Step Guide for Beginners)
 
 This guide will help you install **Windows Subsystem for Linux 2 (WSL2)** on your Windows computer — even if you’ve never used a terminal before.
@@ -176,12 +172,3 @@ Restart your computer and try again.
 ## ? Support
 
 If this guide helped you, consider giving the repo a ?!
-
----
-
-If you want, I can also:
-
-* Add **screenshots**
-* Add a **Mermaid diagram**
-* Extend it with **development setup (Python, Docker, etc.)**
-* Or make a **Spanish version**
