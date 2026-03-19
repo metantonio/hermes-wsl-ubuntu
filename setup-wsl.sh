@@ -8,6 +8,11 @@ MODEL_DIR="$HOME/models"
 echo "🔐 Requesting sudo permissions..."
 sudo -v
 
+# Keep sudo alive
+echo "🔐 Keep sudo alive while this script is installing everything"
+
+while true; do sudo -n true; sleep 60; done 2>/dev/null &
+
 echo "🔐 Installing with /opt structure (repo-compliant)..."
 
 # ----------------------------
