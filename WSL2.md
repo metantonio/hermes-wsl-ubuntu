@@ -1,10 +1,10 @@
-# ?? Install WSL2 on Windows (Step-by-Step Guide for Beginners)
+# Install WSL2 on Windows (Step-by-Step Guide for Beginners)
 
 This guide will help you install **Windows Subsystem for Linux 2 (WSL2)** on your Windows computer — even if you’ve never used a terminal before.
 
 ---
 
-## ?? What is WSL2?
+## What is WSL2?
 
 **WSL2 (Windows Subsystem for Linux)** lets you run a real Linux system directly inside Windows — no virtual machines, no dual boot.
 
@@ -16,7 +16,7 @@ This guide will help you install **Windows Subsystem for Linux 2 (WSL2)** on you
 
 ---
 
-## ? Requirements
+## Requirements
 
 Before starting, make sure you have:
 
@@ -26,7 +26,7 @@ Before starting, make sure you have:
 
 ---
 
-## ?? Step 1 — Open PowerShell as Administrator
+## Step 1 — Open PowerShell as Administrator
 
 1. Click the **Start Menu**
 2. Type: `PowerShell`
@@ -35,7 +35,7 @@ Before starting, make sure you have:
 
 ---
 
-## ?? Step 2 — Install WSL (One Command)
+## Step 2 — Install WSL (One Command)
 
 Copy and paste this command into PowerShell:
 
@@ -43,7 +43,7 @@ Copy and paste this command into PowerShell:
 wsl --install
 ```
 
-?? Press **Enter**
+Press **Enter**
 
 ### What this does:
 
@@ -53,15 +53,15 @@ wsl --install
 
 ---
 
-## ?? Step 3 — Restart Your Computer
+## Step 3 — Restart Your Computer
 
 After installation finishes:
 
-?? Restart your PC
+Restart your PC
 
 ---
 
-## ?? Step 4 — Set Up Linux (Ubuntu)
+## Step 4 — Set Up Linux (Ubuntu)
 
 After restarting:
 
@@ -77,13 +77,13 @@ After restarting:
 
 ---
 
-## ?? Step 5 — You're Done!
+## Step 5 — You're Done!
 
 You now have Linux running on your Windows machine ??
 
 ---
 
-## ?? How to Open Linux Again
+## How to Open Linux Again
 
 You can open Linux anytime by:
 
@@ -99,7 +99,7 @@ wsl
 
 ---
 
-## ?? Check WSL Version
+## Check WSL Version
 
 To confirm everything is working:
 
@@ -113,7 +113,7 @@ You should see something like:
 
 ---
 
-## ? Optional — Set WSL2 as Default
+## Optional — Set WSL2 as Default
 
 ```bash
 wsl --set-default-version 2
@@ -121,7 +121,7 @@ wsl --set-default-version 2
 
 ---
 
-## ??? Useful Basic Commands
+## Useful Basic Commands
 
 Inside Linux, try these:
 
@@ -134,7 +134,7 @@ clear     # Clean screen
 
 ---
 
-## ?? Tips for Beginners
+## Tips for Beginners
 
 * Linux is **case-sensitive** (Documents ? documents)
 * Use `Ctrl + Shift + V` to paste in terminal
@@ -142,7 +142,7 @@ clear     # Clean screen
 
 ---
 
-## ? Troubleshooting
+## Troubleshooting
 
 ### If `wsl --install` doesn’t work:
 
@@ -162,13 +162,13 @@ Restart your computer and try again.
 
 ---
 
-## ?? Learn More
+## Learn More
 
 * Official Microsoft Docs:
   [https://learn.microsoft.com/windows/wsl/](https://learn.microsoft.com/windows/wsl/)
 
 ---
 
-## ? Support
+## Support
 
 If this guide helped you, consider giving the repo a ?!
