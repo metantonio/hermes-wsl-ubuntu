@@ -5,6 +5,9 @@ set -e
 AI_OPT_DIR="/opt/llamaCPP"
 MODEL_DIR="$HOME/models"
 
+echo "🔐 Requesting sudo permissions..."
+sudo -v
+
 echo "🔐 Installing with /opt structure (repo-compliant)..."
 
 # ----------------------------
