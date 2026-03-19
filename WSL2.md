@@ -8,7 +8,7 @@ This guide will help you install **Windows Subsystem for Linux 2 (WSL2)** on you
 
 **WSL2 (Windows Subsystem for Linux)** lets you run a real Linux system directly inside Windows — no virtual machines, no dual boot.
 
-?? You’ll be able to:
+You’ll be able to:
 
 * Use Linux commands
 * Run development tools
@@ -79,7 +79,7 @@ After restarting:
 
 ## Step 5 — You're Done!
 
-You now have Linux running on your Windows machine ??
+You now have Linux running on your Windows machine 
 
 ---
 
@@ -136,7 +136,7 @@ clear     # Clean screen
 
 ## Tips for Beginners
 
-* Linux is **case-sensitive** (Documents ? documents)
+* Linux is **case-sensitive** (`Documents` is not the same as `documents`)
 * Use `Ctrl + Shift + V` to paste in terminal
 * Don’t worry if it feels unfamiliar — you’ll learn quickly!
 
