@@ -136,7 +136,9 @@ cmake -B build
 cmake --build build --config Release
 ```
 
-Note:
+Note that for CPU, you may want to install [BLAS](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md#blas-build) to accelerated inference using **.ggml** LLM models, not .gguf 
+
+## Note:
 
 remove any previous failed build with:
 
