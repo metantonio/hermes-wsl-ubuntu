@@ -56,7 +56,7 @@ flowchart LR
 
 # Automatic installation
 
-If you are in WSL - Ubuntu, execute the following script
+If you are in WSL - Ubuntu, execute the following script to install CUDA, Hermes, llama.cpp (you will be asked for sudo password)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/metantonio/hermes-wsl-ubuntu/master/setup-wsl.sh | bash
