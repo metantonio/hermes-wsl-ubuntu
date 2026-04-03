@@ -4,6 +4,7 @@ set -e
 
 AI_OPT_DIR="/opt/llamaCPP"
 MODEL_DIR="$HOME/models"
+CAMOFOX_DIR="/opt/camofox"
 
 echo "Requesting sudo permissions..."
 sudo -v
@@ -136,6 +137,18 @@ echo ""
 echo "Setup complete!"
 cd "$HOME"
 echo ""
+
+# ----------------------------
+# 🧠 Install Camofox /opt/
+# ----------------------------
+
+if [ ! -d "$CAMOFOX_DIR" ]; then
+    echo "Cloning camofox into /opt..."
+    sudo git clone https://github.com/jo-inc/camofox-browser "$CAMOFOX_DIR"
+    cd "$CAMOFOX_DIR"
+    npm install && npm start
+fi
+
 echo "Please complete the hermes setup manually, doing:"
 echo "hermes setup"
 echo "then, check the variables to change in the .env file: https://github.com/metantonio/hermes-wsl-ubuntu?tab=readme-ov-file#config"
