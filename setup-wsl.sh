@@ -107,7 +107,8 @@ echo "1) Qwen3.5-9B-Q4_K_M.gguf (5.5 GB)"
 echo "2) Qwen3.5-9B-Q5_K_M.gguf (6.5 GB)"
 echo "3) Omnicoder:9B-Q4_K_M.gguf (6.52 GB)"
 echo "4) Gemma4:E4B-Q4_K_M.gguf (4.98 GB)"
-echo "5) Skip"
+echo "5) Carnice-9b-GGUF-Q6_K.gguf (7.36 GB) (Fine-tuned for Hermes)"
+echo "6) Skip"
 read -p "Choose [1-5]: " choice
 
 if [ "$choice" == "1" ]; then
@@ -128,6 +129,11 @@ fi
 if [ "$choice" == "4" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF/resolve/main/gemma-4-E4B-it-q4_k_m.gguf
+fi
+
+if [ "$choice" == "5" ]; then
+    echo "Downloading model..."
+    wget https://huggingface.co/kai-os/Carnice-9b-GGUF/resolve/main/Carnice-9b-Q6_K.gguf
 fi
 
 # ----------------------------
