@@ -59,7 +59,7 @@ flowchart LR
 If you are in WSL - Ubuntu, execute the following script to install CUDA, Hermes, llama.cpp (you will be asked for sudo password)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/metantonio/hermes-wsl-ubuntu/master/setup-wsl.sh | bash
+curl -fsSL https://raw.githubusercontent.com/metantonio/hermes-wsl-ubuntu/master/setup-wsl.sh -o setup-wsl.sh && bash setup-wsl.sh
 ```
 
 ---
@@ -335,7 +335,7 @@ pie
 
 ### RAM Calculation
 
-Each LLM Transformer layer needs around ~180–320 MB por layer (model-dependent, rough estimate) of VRAM (For GPU) / RAM (for CPU) depending of the Quantization.
+Each LLM Transformer layer needs around ~180ï¿½320 MB por layer (model-dependent, rough estimate) of VRAM (For GPU) / RAM (for CPU) depending of the Quantization.
  - Q4_K_M: would be around 200MB per Layer.
  - Q5_K_M: Would be around 300MB per Layer.
  
