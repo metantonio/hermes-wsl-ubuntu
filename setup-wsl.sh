@@ -36,28 +36,32 @@ if command -v nvidia-smi &> /dev/null; then
         nvcc --version
         USE_CUDA=true
     else
-        echo "CUDA not found — installing..."
+        read -p "CUDA not found. Do you want to install CUDA toolkit for WSL2? (y/n): " install_cuda
+        if [ "$install_cuda" == "y" ]; then
+            echo "Installing CUDA..."
+            # ----------------------------
+            # CUDA install for WSL2
+            # ----------------------------
+            wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+            sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
 
-        # ----------------------------
-        # CUDA install for WSL2
-        # ----------------------------
-        wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
-        sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+            wget https://developer.download.nvidia.com/compute/cuda/13.2.0/local_installers/cuda-repo-wsl-ubuntu-13-2-local_13.2.0-1_amd64.deb
+            sudo dpkg -i cuda-repo-wsl-ubuntu-13-2-local_13.2.0-1_amd64.deb
 
-        wget https://developer.download.nvidia.com/compute/cuda/13.2.0/local_installers/cuda-repo-wsl-ubuntu-13-2-local_13.2.0-1_amd64.deb
-        sudo dpkg -i cuda-repo-wsl-ubuntu-13-2-local_13.2.0-1_amd64.deb
+            sudo cp /var/cuda-repo-wsl-ubuntu-13-2-local/cuda-*-keyring.gpg /usr/share/keyrings/
 
-        sudo cp /var/cuda-repo-wsl-ubuntu-13-2-local/cuda-*-keyring.gpg /usr/share/keyrings/
+            sudo apt-get update
+            sudo apt-get -y install cuda-toolkit-13-2
 
-        sudo apt-get update
-        sudo apt-get -y install cuda-toolkit-13-2
-
-        # Verify installation
-        if command -v nvcc &> /dev/null; then
-            echo "CUDA installed successfully"
-            USE_CUDA=true
+            # Verify installation
+            if command -v nvcc &> /dev/null; then
+                echo "CUDA installed successfully"
+                USE_CUDA=true
+            else
+                echo "ERROR: CUDA installation failed — falling back to CPU"
+            fi
         else
-            echo "ERROR: CUDA installation failed — falling back to CPU"
+            echo "Skipping CUDA installation. Using CPU mode."
         fi
     fi
 else
@@ -74,15 +78,26 @@ fi
 
 cd "$AI_OPT_DIR"
 
-if [ "$USE_CUDA" = true ]; then
-    echo "Building with CUDA"
-    sudo cmake -B build -DGGML_CUDA=ON
-else
-    echo "Building CPU version"
-    sudo cmake -B build
+SHOULD_BUILD=true
+if [ -d "build" ]; then
+    read -p "llama.cpp build directory already exists. Rebuild? (y/n): " rebuild_choice
+    if [ "$rebuild_choice" != "y" ]; then
+        SHOULD_BUILD=false
+    fi
 fi
 
-sudo cmake --build build --config Release
+if [ "$SHOULD_BUILD" = true ]; then
+    if [ "$USE_CUDA" = true ]; then
+        echo "Building with CUDA"
+        sudo cmake -B build -DGGML_CUDA=ON
+    else
+        echo "Building CPU version"
+        sudo cmake -B build
+    fi
+    sudo cmake --build build --config Release
+else
+    echo "Skipping llama.cpp build."
+fi
 
 # ----------------------------
 #  Permissions (IMPORTANT)
