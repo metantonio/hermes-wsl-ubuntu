@@ -174,7 +174,7 @@ if [ ! -d "$CAMOFOX_DIR" ]; then
     echo "Cloning camofox into /opt..."
     sudo git clone https://github.com/jo-inc/camofox-browser "$CAMOFOX_DIR"
     cd "$CAMOFOX_DIR"
-    npm install && npm start > camofox.log 2>&1 &
+    sudo npm install && npm start > camofox.log 2>&1 &
     echo "Camofox will be running at http://localhost:9377"
     echo "to stop Camofox server run: sudo fuser -k 9377/tcp"
 else
