@@ -20,6 +20,7 @@
 * [Prerequisites & Setup](#prerequisites--setup)
 * [Hermes Agent Installation](#hermes-agent-installation)
 * [llama.cpp Installation](#llamacpp-installation)
+* [Camofox Browser Server](#camofox-browser-server)
 * [Model Setup (Qwen3.5)](#model-setup-qwen35)
 * [Running the Server](#running-the-server)
 * [Usage Examples](#usage-examples)
@@ -48,15 +49,17 @@
 flowchart LR
     User --> Hermes
     Hermes -->|OpenAI API| LlamaServer
+    Hermes -->|Browser Control| Camofox
     LlamaServer --> Model[Qwen3.5 GGUF]
     Model --> GPU[GPU / CPU]
+    Camofox --> Web[Internet]
 ```
 
 ---
 
 # Automatic installation
 
-If you are in WSL - Ubuntu, execute the following script to install CUDA, Hermes, llama.cpp (you will be asked for sudo password)
+If you are in WSL - Ubuntu, execute the following script to install CUDA, Hermes, llama.cpp and Camofox (you will be asked for sudo password)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/metantonio/hermes-wsl-ubuntu/master/setup-wsl.sh -o setup-wsl.sh && bash setup-wsl.sh
@@ -165,6 +168,35 @@ rm -rf build
 
 ```bash
 ./build/bin/llama-server -h
+```
+
+---
+
+# Camofox Browser Server
+
+Camofox is a browser-automation server used by the Hermes Agent to perform web-browsing tasks.
+
+### Interaction
+- **Port:** `9377`
+- **URL:** `http://localhost:9377`
+
+### Manual Management
+The `setup-wsl.sh` script automatically starts Camofox in the background. If you need to manage it manually:
+
+**Start:**
+```bash
+cd /opt/camofox
+npm start > camofox.log 2>&1 &
+```
+
+**Stop:**
+```bash
+sudo fuser -k 9377/tcp
+```
+
+**Check Status:**
+```bash
+ps aux | grep camofox
 ```
 
 ---
