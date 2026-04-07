@@ -5,6 +5,7 @@ set -e
 AI_OPT_DIR="/opt/llamaCPP"
 MODEL_DIR="$HOME/models"
 CAMOFOX_DIR="/opt/camofox"
+CAMOFOX_DETECTION="no"
 
 echo "Requesting sudo permissions..."
 sudo -v
@@ -152,7 +153,19 @@ if [ ! -d "$CAMOFOX_DIR" ]; then
     echo "Cloning camofox into /opt..."
     sudo git clone https://github.com/jo-inc/camofox-browser "$CAMOFOX_DIR"
     cd "$CAMOFOX_DIR"
-    npm install && npm start
+    npm install && npm start > camofox.log 2>&1 &
+else
+    echo "Camofox already installed"
+    CAMOFOX_DETECTION="yes"
+fi
+
+if [ "$CAMOFOX_DETECTION" = "yes" ]; then
+    echo "Do you want to start camofox browser server? (y/n)"
+    read -p "Choose [y/n]: " choice
+    if [ "$choice" == "y" ]; then
+        cd "$CAMOFOX_DIR"
+        npm start > camofox.log 2>&1 &
+    fi
 fi
 
 echo "Please complete the hermes setup manually, doing:"
