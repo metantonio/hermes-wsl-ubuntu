@@ -104,12 +104,12 @@ cd "$MODEL_DIR"
 
 echo ""
 echo "Model options:"
-echo "1) Qwen3.5-9B-Q4_K_M.gguf (5.5 GB)"
-echo "2) Qwen3.5-9B-Q5_K_M.gguf (6.5 GB)"
-echo "3) Omnicoder:9B-Q4_K_M.gguf (6.52 GB)"
-echo "4) Gemma4:E4B-Q4_K_M.gguf (4.98 GB)"
-echo "5) Carnice-9b-GGUF-Q6_K.gguf (7.36 GB) (Fine-tuned for Hermes)"
-echo "6) Carnice-9b-GGUF-Q4_K_M.gguf (6.50 GB) (Fine-tuned for Hermes)"
+echo "1) Qwen3.5-9B-Q4_K_M.gguf (5.5 GB) (12GB GPU)"
+echo "2) Qwen3.5-9B-Q5_K_M.gguf (6.5 GB) (12-16GB GPU)"
+echo "3) Omnicoder:9B-Q4_K_M.gguf (6.52 GB) (12GB GPU)"
+echo "4) Gemma4:E4B-Q4_K_M.gguf (4.98 GB) (8-12GB GPU)"
+echo "5) Carnice-9b-GGUF-Q6_K.gguf (7.36 GB) (Fine-tuned for Hermes, 16GB GPU)"
+echo "6) Carnice-9b-GGUF-Q4_K_M.gguf (6.50 GB) (Fine-tuned for Hermes, 12GB GPU)"
 echo "7) Skip"
 read -p "Choose [1-7]: " choice
 
