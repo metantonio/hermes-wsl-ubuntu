@@ -11,28 +11,28 @@ echo "Requesting sudo permissions..."
 sudo -v
 
 # Keep sudo alive
-echo "🔐 Keep sudo alive while this script is installing everything"
+echo "Keep sudo alive while this script is installing everything"
 
 while true; do sudo -n true; sleep 60; done 2>/dev/null &
 
-echo "🔐 Installing with /opt structure (repo-compliant)..."
+echo "Installing with /opt structure (repo-compliant)..."
 
 # ----------------------------
-# 📦 System deps
+#  System deps
 # ----------------------------
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y git curl build-essential cmake git curl wget htop
 
 # ----------------------------
-# ⚡ GPU + CUDA detection
+#  GPU + CUDA detection
 # ----------------------------
 USE_CUDA=false
 
 if command -v nvidia-smi &> /dev/null; then
-    echo "🟢 NVIDIA GPU detected"
+    echo "NVIDIA GPU detected"
 
     if command -v nvcc &> /dev/null; then
-        echo "✅ CUDA already installed"
+        echo "CUDA already installed"
         nvcc --version
         USE_CUDA=true
     else
@@ -54,10 +54,10 @@ if command -v nvidia-smi &> /dev/null; then
 
         # Verify installation
         if command -v nvcc &> /dev/null; then
-            echo "✅ CUDA installed successfully"
+            echo "CUDA installed successfully"
             USE_CUDA=true
         else
-            echo "❌ CUDA installation failed — falling back to CPU"
+            echo "ERROR: CUDA installation failed — falling back to CPU"
         fi
     fi
 else
@@ -65,7 +65,7 @@ else
 fi
 
 # ----------------------------
-# 🧠 Install llama.cpp in /opt
+#  Install llama.cpp in /opt
 # ----------------------------
 if [ ! -d "$AI_OPT_DIR" ]; then
     echo "Cloning llama.cpp into /opt..."
@@ -85,7 +85,7 @@ fi
 sudo cmake --build build --config Release
 
 # ----------------------------
-# 🔐 Permissions (IMPORTANT)
+#  Permissions (IMPORTANT)
 # ----------------------------
 echo "Setting permissions..."
 
@@ -95,7 +95,7 @@ sudo chmod -R 755 "$AI_OPT_DIR/build/bin/llama-server"
 sudo chown -R $USER:$USER "$MODEL_DIR" 2>/dev/null || true
 
 # ----------------------------
-# 📁 Models (user space)
+#  Models (user space)
 # ----------------------------
 mkdir -p "$MODEL_DIR"
 chmod 700 "$HOME/models"
@@ -103,7 +103,7 @@ chmod 700 "$MODEL_DIR"
 cd "$MODEL_DIR"
 
 echo ""
-echo "📥 Model options:"
+echo "Model options:"
 echo "1) Qwen3.5-9B-Q4_K_M.gguf (5.5 GB)"
 echo "2) Qwen3.5-9B-Q5_K_M.gguf (6.5 GB)"
 echo "3) Omnicoder:9B-Q4_K_M.gguf (6.52 GB)"
@@ -144,7 +144,7 @@ if [ "$choice" == "6" ]; then
 fi
 
 # ----------------------------
-# ✅ Done
+#  Done
 # ----------------------------
 echo ""
 echo "Setup complete!"
@@ -152,7 +152,7 @@ cd "$HOME"
 echo ""
 
 # ----------------------------
-# 🧠 Install Camofox /opt/
+#  Install Camofox /opt/
 # ----------------------------
 
 if [ ! -d "$CAMOFOX_DIR" ]; then
@@ -161,6 +161,7 @@ if [ ! -d "$CAMOFOX_DIR" ]; then
     cd "$CAMOFOX_DIR"
     npm install && npm start > camofox.log 2>&1 &
     echo "Camofox will be running at http://localhost:9377"
+    echo "to stop Camofox server run: sudo fuser -k 9377/tcp"
 else
     echo "Camofox already installed"
     CAMOFOX_DETECTION="yes"
@@ -173,6 +174,7 @@ if [ "$CAMOFOX_DETECTION" = "yes" ]; then
         cd "$CAMOFOX_DIR"
         npm start > camofox.log 2>&1 &
         echo "Camofox will be running at http://localhost:9377"
+        echo "to stop Camofox server run: sudo fuser -k 9377/tcp"
     fi
 fi
 
