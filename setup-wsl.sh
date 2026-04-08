@@ -214,6 +214,22 @@ if [ "$hermesvariables" == "y" ]; then
     hermes config set LLM_MODEL $LLM_MODEL
 fi
 
+# ----------------------------
+#  Enable Hermes API server
+# ----------------------------
+
+echo ""
+echo "Enable Hermes API server on http://127.0.0.1:8642? (y/n)"
+read -p "Choose [y/N]: " enable_api
+
+if [ "$enable_api" == "y" ]; then
+    mkdir -p ~/.hermes
+    echo "API_SERVER_ENABLED=true" >> ~/.hermes/.env
+    echo "API_SERVER_KEY=change-me-local-dev" >> ~/.hermes/.env
+    echo "Hermes API server enabled in ~/.hermes/.env and running at http://127.0.0.1:8642"
+    echo "REMEMBER: Change the API_SERVER_KEY manually for security."
+fi
+
 echo "Please complete the hermes setup manually, doing:"
 echo "hermes setup"
 echo "then, check the variables to change in the .env file: https://github.com/metantonio/hermes-wsl-ubuntu?tab=readme-ov-file#config"
