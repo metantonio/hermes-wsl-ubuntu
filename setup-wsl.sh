@@ -6,6 +6,7 @@ AI_OPT_DIR="/opt/llamaCPP"
 MODEL_DIR="$HOME/models"
 CAMOFOX_DIR="/opt/camofox"
 CAMOFOX_DETECTION="no"
+LLM_MODEL=""
 
 echo "Requesting sudo permissions..."
 sudo -v
@@ -131,31 +132,37 @@ read -p "Choose [1-7]: " choice
 if [ "$choice" == "1" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf
+    LLM_MODEL="Qwen3.5-9B-Q4_K_M.gguf"
 fi
 
 if [ "$choice" == "2" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q5_K_M.gguf
+    LLM_MODEL="Qwen3.5-9B-Q5_K_M.gguf"  
 fi
 
 if [ "$choice" == "3" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/Tesslate/OmniCoder-9B-GGUF/resolve/main/omnicoder-9b-q5_k_m.gguf
+    LLM_MODEL="omnicoder-9b-q5_k_m.gguf"
 fi
 
 if [ "$choice" == "4" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF/resolve/main/gemma-4-E4B-it-q4_k_m.gguf
+    LLM_MODEL="gemma-4-E4B-it-q4_k_m.gguf"
 fi
 
 if [ "$choice" == "5" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/kai-os/Carnice-9b-GGUF/resolve/main/Carnice-9b-Q6_K.gguf
+    LLM_MODEL="Carnice-9b-Q6_K.gguf"
 fi
 
 if [ "$choice" == "6" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/kai-os/Carnice-9b-GGUF/resolve/main/Carnice-9b-Q4_K_M.gguf
+    LLM_MODEL="Carnice-9b-Q4_K_M.gguf"
 fi
 
 # ----------------------------
@@ -191,6 +198,20 @@ if [ "$CAMOFOX_DETECTION" = "yes" ]; then
         echo "Camofox will be running at http://localhost:9377"
         echo "to stop Camofox server run: sudo fuser -k 9377/tcp"
     fi
+fi
+
+# ----------------------------
+#  Setup Hermes variables
+# ----------------------------
+
+echo ""
+echo "Setup Hermes variables in order to use llama.cpp server? (y/n)"
+read -p "Choose [y/N]: " hermesvariables
+
+if [ "$hermesvariables" == "y" ]; then
+    hermes config set OPENAI_BASE_URL http://localhost:8080/v1
+    hermes config set OPENAI_API_KEY dummy
+    hermes config set LLM_MODEL $LLM_MODEL
 fi
 
 echo "Please complete the hermes setup manually, doing:"
