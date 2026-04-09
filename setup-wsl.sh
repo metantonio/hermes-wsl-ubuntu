@@ -16,6 +16,7 @@ CAMOFOX_DIR="/opt/camofox"
 CAMOFOX_DETECTION="no"
 LLM_MODEL=""
 WEB_UI_HERMES_DIR="$HOME/hermes-hudui"
+CACHE_TYPE="q4_0"
 
 echo "Requesting sudo permissions..."
 sudo -v
@@ -212,36 +213,42 @@ if [ "$choice" == "1" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf
     LLM_MODEL="Qwen3.5-9B-Q4_K_M.gguf"
+    CACHE_TYPE="q4_0"
 fi
 
 if [ "$choice" == "2" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q5_K_M.gguf
     LLM_MODEL="Qwen3.5-9B-Q5_K_M.gguf"  
+    CACHE_TYPE="q5_0"
 fi
 
 if [ "$choice" == "3" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/Tesslate/OmniCoder-9B-GGUF/resolve/main/omnicoder-9b-q5_k_m.gguf
     LLM_MODEL="omnicoder-9b-q5_k_m.gguf"
+    CACHE_TYPE="q5_0"
 fi
 
 if [ "$choice" == "4" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF/resolve/main/gemma-4-E4B-it-q4_k_m.gguf
     LLM_MODEL="gemma-4-E4B-it-q4_k_m.gguf"
+    CACHE_TYPE="q4_0"
 fi
 
 if [ "$choice" == "5" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/kai-os/Carnice-9b-GGUF/resolve/main/Carnice-9b-Q6_K.gguf
     LLM_MODEL="Carnice-9b-Q6_K.gguf"
+    CACHE_TYPE="q8_0"
 fi
 
 if [ "$choice" == "6" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/kai-os/Carnice-9b-GGUF/resolve/main/Carnice-9b-Q4_K_M.gguf
     LLM_MODEL="Carnice-9b-Q4_K_M.gguf"
+    CACHE_TYPE="q4_0"
 fi
 
 # ----------------------------
@@ -347,6 +354,57 @@ else
         echo "Hermes HDUI will be running at http://localhost:3001"
         hermes-hudui > hermes-hudui.log 2>&1 &
         echo "To stop Web UI run: sudo fuser -k 3001/tcp"
+    fi
+fi
+
+# ----------------------------
+#  Start Llama.cpp server on localhost:8080 by default
+# ----------------------------
+echo ""
+read -p "Do you want to start the llama.cpp server? (y/n)" start_llama
+if [ "$start_llama" == "y" ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Model Selection for Server"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    
+    # List models
+    models=($(ls $MODEL_DIR/*.gguf 2>/dev/null))
+    if [ ${#models[@]} -eq 0 ]; then
+        echo "No models found in $MODEL_DIR. Skipping server start."
+    else
+        echo "Available models in $MODEL_DIR:"
+        for i in "${!models[@]}"; do
+            echo "$((i+1))) $(basename "${models[$i]}")"
+        done
+        read -p "Select a model [1-${#models[@]}]: " model_idx
+        
+        # Validate selection
+        if [[ "$model_idx" =~ ^[0-9]+$ ]] && [ "$model_idx" -ge 1 ] && [ "$model_idx" -le "${#models[@]}" ]; then
+            SELECTED_MODEL="${models[$((model_idx-1))]}"
+            SELECTED_BASENAME=$(basename "$SELECTED_MODEL")
+            echo "Selected: $SELECTED_BASENAME"
+            
+            # Detect CACHE_TYPE based on filename
+            if [[ "$SELECTED_BASENAME" == *"Q6"* ]]; then
+                CACHE_TYPE="q8_0"
+            elif [[ "$SELECTED_BASENAME" == *"Q5"* ]]; then
+                CACHE_TYPE="q5_0"
+            elif [[ "$SELECTED_BASENAME" == *"Q4"* ]]; then
+                CACHE_TYPE="q4_0"
+            else
+                # Default to q4_0 if no match found and not previously set
+                CACHE_TYPE="${CACHE_TYPE:-q4_0}"
+            fi
+            
+            echo "Using Cache Type: $CACHE_TYPE"
+            echo "Llama.cpp server will be running at http://localhost:8080"
+            # Using AI_OPT_DIR variable for consistency
+            $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c 131072 -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE --host 127.0.0.1 > llama-server.log 2>&1 &
+            echo "Server started in background. Logs: llama-server.log"
+            echo "To stop Llama server run: sudo fuser -k 8080/tcp"
+        else
+            echo "Invalid selection. Skipping server start."
+        fi
     fi
 fi
 
