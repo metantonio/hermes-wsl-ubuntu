@@ -38,11 +38,17 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "✔ Platform: $OS"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# ----------------------------
-#  System deps
-# ----------------------------
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y git curl build-essential cmake git curl wget htop
+if [ "$OS" == "linux" ]; then
+    sudo apt update && sudo apt upgrade -y
+    sudo apt install -y git curl build-essential cmake wget htop
+elif [ "$OS" == "macos" ]; then
+    if ! command -v brew &> /dev/null; then
+        echo "Homebrew not found. Please install it from https://brew.sh/"
+        exit 1
+    fi
+    brew update
+    brew install git curl cmake wget htop node
+fi
 
 # ----------------------------
 #  Install Hermes Agent
@@ -64,59 +70,59 @@ else
 fi
 
 # ----------------------------
-#  GPU + CUDA detection
+#  GPU detection
 # ----------------------------
 USE_CUDA=false
+USE_METAL=false
 echo ""
 
-if command -v nvidia-smi &> /dev/null; then
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "NVIDIA GPU detected"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-    if command -v nvcc &> /dev/null; then
+if [ "$OS" == "linux" ]; then
+    if command -v nvidia-smi &> /dev/null; then
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "CUDA already installed"
+        echo "NVIDIA GPU detected"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        nvcc --version
-        USE_CUDA=true
-    else
-        read -p "CUDA not found. Do you want to install CUDA toolkit for WSL2? (y/n): " install_cuda
-        if [ "$install_cuda" == "y" ]; then
+
+        if command -v nvcc &> /dev/null; then
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            echo "Installing CUDA..."
+            echo "CUDA already installed"
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            # ----------------------------
-            # CUDA install for WSL2
-            # ----------------------------
-            wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
-            sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
-
-            wget https://developer.download.nvidia.com/compute/cuda/13.2.0/local_installers/cuda-repo-wsl-ubuntu-13-2-local_13.2.0-1_amd64.deb
-            sudo dpkg -i cuda-repo-wsl-ubuntu-13-2-local_13.2.0-1_amd64.deb
-
-            sudo cp /var/cuda-repo-wsl-ubuntu-13-2-local/cuda-*-keyring.gpg /usr/share/keyrings/
-
-            sudo apt-get update
-            sudo apt-get -y install cuda-toolkit-13-2
-
-            # Verify installation
-            if command -v nvcc &> /dev/null; then
-                echo "CUDA installed successfully"
-                USE_CUDA=true
-            else
-                echo "ERROR: CUDA installation failed — falling back to CPU"
-            fi
+            nvcc --version
+            USE_CUDA=true
         else
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            echo "Skipping CUDA installation. Using CPU mode."
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            read -p "CUDA not found. Do you want to install CUDA toolkit for WSL2? (y/n): " install_cuda
+            if [ "$install_cuda" == "y" ]; then
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                echo "Installing CUDA..."
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+                sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+                wget https://developer.download.nvidia.com/compute/cuda/13.2.0/local_installers/cuda-repo-wsl-ubuntu-13-2-local_13.2.0-1_amd64.deb
+                sudo dpkg -i cuda-repo-wsl-ubuntu-13-2-local_13.2.0-1_amd64.deb
+                sudo cp /var/cuda-repo-wsl-ubuntu-13-2-local/cuda-*-keyring.gpg /usr/share/keyrings/
+                sudo apt-get update
+                sudo apt-get -y install cuda-toolkit-13-2
+                if command -v nvcc &> /dev/null; then
+                    echo "CUDA installed successfully"
+                    USE_CUDA=true
+                else
+                    echo "ERROR: CUDA installation failed — falling back to CPU"
+                fi
+            else
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                echo "Skipping CUDA installation. Using CPU mode."
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            fi
         fi
+    else
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "No GPU detected — using CPU"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     fi
-else
+elif [ "$OS" == "macos" ]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "No GPU detected — using CPU"
+    echo "macOS detected — Using Metal for GPU acceleration"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    USE_METAL=true
 fi
 
 # ----------------------------
@@ -147,6 +153,11 @@ if [ "$SHOULD_BUILD" = true ]; then
         echo "Building with CUDA"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         sudo cmake -B build -DGGML_CUDA=ON
+    elif [ "$USE_METAL" = true ]; then
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Building with Metal"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        sudo cmake -B build -DGGML_METAL=ON
     else
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "Building CPU version"
