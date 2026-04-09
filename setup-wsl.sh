@@ -2,6 +2,10 @@
 
 set -e
 
+echo "Infrastructure for Hermes Agent — Install"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+HERMES_INSTALL_DIR="$HOME/.hermes"
 AI_OPT_DIR="/opt/llamaCPP"
 MODEL_DIR="$HOME/models"
 CAMOFOX_DIR="/opt/camofox"
@@ -24,6 +28,21 @@ echo "Installing with /opt structure (repo-compliant)..."
 # ----------------------------
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y git curl build-essential cmake git curl wget htop
+
+# ----------------------------
+#  Install Hermes Agent
+# ----------------------------
+if ! command -v hermes &> /dev/null; then
+    echo ""
+    echo "Hermes Agent not found."
+    read -p "Do you want to install Hermes Agent? (y/n): " install_hermes
+    if [ "$install_hermes" == "y" ]; then
+        echo "Installing Hermes Agent..."
+        curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+    fi
+else
+    echo "Hermes Agent already installed."
+fi
 
 # ----------------------------
 #  GPU + CUDA detection
