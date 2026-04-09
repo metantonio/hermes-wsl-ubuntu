@@ -231,8 +231,9 @@ if [ "$enable_api" == "y" ]; then
 fi
 
 # ----------------------------
-#  Install Web UI Hermes in ~/hermes-hudui
+#  Install Web UI Hermes in ~/hermes-hudui will be on port 3001
 # ----------------------------
+echo ""
 if [ ! -d "$WEB_UI_HERMES_DIR" ]; then
     echo "Cloning Web UI Hermes into ~/hermes-hudui..."
     sudo git clone https://github.com/joeynyc/hermes-hudui.git "$WEB_UI_HERMES_DIR"
@@ -242,6 +243,7 @@ if [ ! -d "$WEB_UI_HERMES_DIR" ]; then
     ./install.sh
     read -p "Do you want to start the web ui hermes? (y/n)" start_webui
     if [ "$start_webui" == "y" ]; then
+        echo "Hermes HDUI will be running at http://localhost:3001"
         hermes-hudui
     fi
 else
@@ -250,6 +252,7 @@ else
     if [ "$start_webui" == "y" ]; then
         cd "$WEB_UI_HERMES_DIR"
         source venv/bin/activate
+        echo "Hermes HDUI will be running at http://localhost:3001"
         hermes-hudui
     fi
 fi
