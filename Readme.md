@@ -21,6 +21,8 @@
 * [Hermes Agent Installation](#hermes-agent-installation)
 * [llama.cpp Installation](#llamacpp-installation)
 * [Camofox Browser Server](#camofox-browser-server)
+* [Hermes HUDUI (Web UI)](#hermes-hudui-web-ui)
+* [Hermes API Server](#hermes-api-server)
 * [Model Setup (Qwen3.5)](#model-setup-qwen35)
 * [Running the Server](#running-the-server)
 * [Usage Examples](#usage-examples)
@@ -47,7 +49,8 @@
 
 ```mermaid
 flowchart LR
-    User --> Hermes
+    User -->|Browser| WebUI[Hermes HUDUI]
+    WebUI --> Hermes
     Hermes -->|OpenAI API| LlamaServer
     Hermes -->|Browser Control| Camofox
     LlamaServer --> Model[Qwen3.5 GGUF]
@@ -59,7 +62,7 @@ flowchart LR
 
 # Automatic installation
 
-If you are in WSL - Ubuntu, execute the following script to install CUDA, Hermes, llama.cpp and Camofox (you will be asked for sudo password)
+If you are in **Linux** or **macOS**, execute the following script to install CUDA (if applicable), Hermes, llama.cpp, Camofox and the Web UI. The script will automatically detect your platform.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/metantonio/hermes-wsl-ubuntu/master/setup-wsl.sh -o setup-wsl.sh && bash setup-wsl.sh
@@ -198,6 +201,49 @@ sudo fuser -k 9377/tcp
 ```bash
 ps aux | grep camofox
 ```
+
+---
+
+# Hermes HUDUI (Web UI)
+
+Hermes HUDUI is the graphical interface for interacting with the Hermes Agent.
+
+### Interaction
+- **Port:** `3001`
+- **URL:** `http://localhost:3001`
+- **Environment:** Requires Python 3.11+ and a virtual environment (handled by setup script).
+
+### Manual Management
+**Start:**
+```bash
+cd ~/hermes-hudui
+source venv/bin/activate
+hermes-hudui > hermes-hudui.log 2>&1 &
+```
+
+**Stop:**
+```bash
+sudo fuser -k 3001/tcp
+```
+
+---
+
+# Hermes API Server
+
+The Hermes Agent includes an optional API server for remote integrations.
+
+### Interaction
+- **Port:** `8642`
+- **URL:** `http://localhost:8642`
+
+### Configuration
+The setup script configures this in `~/.hermes/.env`:
+```bash
+API_SERVER_ENABLED=true
+API_SERVER_KEY=change-me-local-dev
+```
+> [!IMPORTANT]
+> Change the `API_SERVER_KEY` manually for security in production environments.
 
 ---
 

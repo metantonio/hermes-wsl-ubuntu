@@ -25,7 +25,7 @@ echo "Keep sudo alive while this script is installing everything"
 
 while true; do sudo -n true; sleep 60; done 2>/dev/null &
 
-echo "Installing with /opt structure (repo-compliant)..."
+echo ""
 
 # Detect platform
 PLATFORM="$(uname -s)"
@@ -34,7 +34,9 @@ case "$PLATFORM" in
     Linux*)   OS="linux";;
     *)        echo "✗ Unsupported platform: $PLATFORM"; exit 1;;
 esac
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✔ Platform: $OS"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # ----------------------------
 #  System deps
