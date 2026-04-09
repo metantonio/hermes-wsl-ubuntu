@@ -7,6 +7,7 @@ MODEL_DIR="$HOME/models"
 CAMOFOX_DIR="/opt/camofox"
 CAMOFOX_DETECTION="no"
 LLM_MODEL=""
+WEB_UI_HERMES_DIR="$HOME/hermes-hudui"
 
 echo "Requesting sudo permissions..."
 sudo -v
@@ -228,6 +229,32 @@ if [ "$enable_api" == "y" ]; then
     echo "Hermes API server enabled in ~/.hermes/.env and running at http://127.0.0.1:8642"
     echo "REMEMBER: Change the API_SERVER_KEY manually for security."
 fi
+
+# ----------------------------
+#  Install Web UI Hermes in ~/hermes-hudui
+# ----------------------------
+if [ ! -d "$WEB_UI_HERMES_DIR" ]; then
+    echo "Cloning Web UI Hermes into ~/hermes-hudui..."
+    sudo git clone https://github.com/joeynyc/hermes-hudui.git "$WEB_UI_HERMES_DIR"
+    cd "$WEB_UI_HERMES_DIR"
+    python3.11 -m venv venv
+    source venv/bin/activate
+    ./install.sh
+    read -p "Do you want to start the web ui hermes? (y/n)" start_webui
+    if [ "$start_webui" == "y" ]; then
+        hermes-hudui
+    fi
+else
+    echo "Web UI Hermes already installed"
+    read -p "Do you want to start the web ui hermes? (y/n)" start_webui
+    if [ "$start_webui" == "y" ]; then
+        cd "$WEB_UI_HERMES_DIR"
+        source venv/bin/activate
+        hermes-hudui
+    fi
+fi
+
+
 
 echo "Please complete the hermes setup manually, doing:"
 echo "hermes setup"
