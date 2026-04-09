@@ -2,6 +2,7 @@
 
 set -e
 
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Infrastructure for Hermes Agent — Install"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -37,29 +38,40 @@ if ! command -v hermes &> /dev/null; then
     echo "Hermes Agent not found."
     read -p "Do you want to install Hermes Agent? (y/n): " install_hermes
     if [ "$install_hermes" == "y" ]; then
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "Installing Hermes Agent..."
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
     fi
 else
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Hermes Agent already installed."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 fi
 
 # ----------------------------
 #  GPU + CUDA detection
 # ----------------------------
 USE_CUDA=false
+echo ""
 
 if command -v nvidia-smi &> /dev/null; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "NVIDIA GPU detected"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
     if command -v nvcc &> /dev/null; then
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "CUDA already installed"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         nvcc --version
         USE_CUDA=true
     else
         read -p "CUDA not found. Do you want to install CUDA toolkit for WSL2? (y/n): " install_cuda
         if [ "$install_cuda" == "y" ]; then
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo "Installing CUDA..."
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             # ----------------------------
             # CUDA install for WSL2
             # ----------------------------
@@ -82,23 +94,31 @@ if command -v nvidia-smi &> /dev/null; then
                 echo "ERROR: CUDA installation failed — falling back to CPU"
             fi
         else
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo "Skipping CUDA installation. Using CPU mode."
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         fi
     fi
 else
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "No GPU detected — using CPU"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 fi
 
 # ----------------------------
 #  Install llama.cpp in /opt
 # ----------------------------
+echo ""
 if [ ! -d "$AI_OPT_DIR" ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Cloning llama.cpp into /opt..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     sudo git clone https://github.com/ggerganov/llama.cpp.git "$AI_OPT_DIR"
 fi
 
 cd "$AI_OPT_DIR"
 
+echo ""
 SHOULD_BUILD=true
 if [ -d "build" ]; then
     read -p "llama.cpp build directory already exists. Rebuild? (y/n): " rebuild_choice
@@ -109,10 +129,14 @@ fi
 
 if [ "$SHOULD_BUILD" = true ]; then
     if [ "$USE_CUDA" = true ]; then
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "Building with CUDA"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         sudo cmake -B build -DGGML_CUDA=ON
     else
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "Building CPU version"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         sudo cmake -B build
     fi
     sudo cmake --build build --config Release
@@ -123,7 +147,10 @@ fi
 # ----------------------------
 #  Permissions (IMPORTANT)
 # ----------------------------
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Setting permissions..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 sudo chmod -R 755 "$AI_OPT_DIR/build/bin/llama-server"
 
@@ -133,6 +160,10 @@ sudo chown -R $USER:$USER "$MODEL_DIR" 2>/dev/null || true
 # ----------------------------
 #  Models (user space)
 # ----------------------------
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Models (user space)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 mkdir -p "$MODEL_DIR"
 chmod 700 "$HOME/models"
 chmod 700 "$MODEL_DIR"
@@ -186,10 +217,12 @@ if [ "$choice" == "6" ]; then
 fi
 
 # ----------------------------
-#  Done
+#  Main Setup Done
 # ----------------------------
 echo ""
-echo "Setup complete!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Main Setup complete!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 cd "$HOME"
 echo ""
 
@@ -229,6 +262,9 @@ echo "Setup Hermes variables in order to use llama.cpp server? (y/n)"
 read -p "Choose [y/N]: " hermesvariables
 
 if [ "$hermesvariables" == "y" ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Setting up Hermes variables..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     hermes config set OPENAI_BASE_URL http://localhost:8080/v1
     hermes config set OPENAI_API_KEY dummy
     hermes config set LLM_MODEL $LLM_MODEL
@@ -243,6 +279,9 @@ echo "Enable Hermes API server on http://127.0.0.1:8642? (y/n)"
 read -p "Choose [y/N]: " enable_api
 
 if [ "$enable_api" == "y" ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Enabling Hermes API server..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "API_SERVER_ENABLED=true" >> ~/.hermes/.env
     echo "API_SERVER_KEY=change-me-local-dev" >> ~/.hermes/.env
     echo "Hermes API server enabled in ~/.hermes/.env and running at http://127.0.0.1:8642"
@@ -254,7 +293,9 @@ fi
 # ----------------------------
 echo ""
 if [ ! -d "$WEB_UI_HERMES_DIR" ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Cloning Web UI Hermes into ~/hermes-hudui..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     sudo git clone https://github.com/joeynyc/hermes-hudui.git "$WEB_UI_HERMES_DIR"
     cd "$WEB_UI_HERMES_DIR"
     python3.11 -m venv venv
@@ -263,21 +304,26 @@ if [ ! -d "$WEB_UI_HERMES_DIR" ]; then
     read -p "Do you want to start the web ui hermes? (y/n)" start_webui
     if [ "$start_webui" == "y" ]; then
         echo "Hermes HDUI will be running at http://localhost:3001"
-        hermes-hudui
+        hermes-hudui > hermes-hudui.log 2>&1 &
+        echo "To stop Web UI run: sudo fuser -k 3001/tcp"
     fi
 else
     echo "Web UI Hermes already installed"
     read -p "Do you want to start the web ui hermes? (y/n)" start_webui
     if [ "$start_webui" == "y" ]; then
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Starting Web UI Hermes..."
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         cd "$WEB_UI_HERMES_DIR"
         source venv/bin/activate
         echo "Hermes HDUI will be running at http://localhost:3001"
-        hermes-hudui
+        hermes-hudui > hermes-hudui.log 2>&1 &
+        echo "To stop Web UI run: sudo fuser -k 3001/tcp"
     fi
 fi
 
 
-
+echo ""
 echo "Please complete the hermes setup manually, doing:"
 echo "hermes setup"
 echo "then, check the variables to change in the .env file: https://github.com/metantonio/hermes-wsl-ubuntu?tab=readme-ov-file#config"
