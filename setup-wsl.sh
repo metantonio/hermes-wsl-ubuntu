@@ -11,12 +11,28 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 # ----------------------------
 HERMES_INSTALL_DIR="$HOME/.hermes"
 AI_OPT_DIR="/opt/llamaCPP"
-MODEL_DIR="$HOME/models"
 CAMOFOX_DIR="/opt/camofox"
 CAMOFOX_DETECTION="no"
 LLM_MODEL=""
 WEB_UI_HERMES_DIR="$HOME/hermes-hudui"
 CACHE_TYPE="q4_0"
+
+# Prompt for Model Directory
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Configuration"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+read -p "Enter the directory for LLM models [default: $HOME/models]: " input_dir
+MODEL_DIR="${input_dir:-$HOME/models}"
+
+# Expand tilde if present
+MODEL_DIR="${MODEL_DIR/#\~/$HOME}"
+
+if [ ! -d "$MODEL_DIR" ]; then
+    echo "Creating directory: $MODEL_DIR"
+    mkdir -p "$MODEL_DIR"
+else
+    echo "Using existing directory: $MODEL_DIR"
+fi
 
 echo "Requesting sudo permissions..."
 sudo -v
