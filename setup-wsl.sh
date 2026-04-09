@@ -368,7 +368,10 @@ if [ "$start_llama" == "y" ]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     # List models
-    models=($(ls $MODEL_DIR/*.gguf 2>/dev/null))
+    shopt -s nullglob
+    models=("$MODEL_DIR"/*.gguf)
+    shopt -u nullglob
+
     if [ ${#models[@]} -eq 0 ]; then
         echo "No models found in $MODEL_DIR. Skipping server start."
     else
