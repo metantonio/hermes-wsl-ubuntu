@@ -6,6 +6,9 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "Infrastructure for Hermes Agent — Install"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+# ----------------------------
+#  Variables
+# ----------------------------
 HERMES_INSTALL_DIR="$HOME/.hermes"
 AI_OPT_DIR="/opt/llamaCPP"
 MODEL_DIR="$HOME/models"
@@ -23,6 +26,15 @@ echo "Keep sudo alive while this script is installing everything"
 while true; do sudo -n true; sleep 60; done 2>/dev/null &
 
 echo "Installing with /opt structure (repo-compliant)..."
+
+# Detect platform
+PLATFORM="$(uname -s)"
+case "$PLATFORM" in
+    Darwin*)  OS="macos";;
+    Linux*)   OS="linux";;
+    *)        echo "✗ Unsupported platform: $PLATFORM"; exit 1;;
+esac
+echo "✔ Platform: $OS"
 
 # ----------------------------
 #  System deps
