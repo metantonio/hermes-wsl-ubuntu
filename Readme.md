@@ -9,7 +9,7 @@
 **Date:** March 18, 2026
 **Updated:** April 9, 2026
 
-> End-to-end setup for running **Hermes Agent + llama.cpp + Qwen3.5** locally with GPU acceleration.
+> End-to-end setup for running **Hermes Agent + llama.cpp + Qwen3.5** locally with GPU acceleration (**CUDA** for Linux/WSL, **Metal** for macOS).
 
 ---
 
@@ -42,7 +42,13 @@
 | VRAM      | 6GB            | 12GB+            |
 | RAM       | 16GB           | 32GB             |
 | CPU       | 4 cores        | 8+ cores         |
-| OS        | Linux / WSL2   | WSL2/ Ubuntu 22.04     |
+| OS        | Linux / WSL / macOS | Apple Silicon / Ubuntu |
+
+**Platform Requirements:**
+- **Linux / WSL2 (Ubuntu):** NVIDIA GPU with CUDA drivers installed (optional).
+- **macOS:** Apple Silicon (M1/M2/M3) for **Metal** acceleration.
+- **Node.js:** 18+
+- **Package Manager:** `apt` (Linux) or `brew` (macOS).
 
 ---
 
@@ -141,6 +147,11 @@ sudo chown -R $USER:$USER /opt/llama.cpp
 cd /opt/llama.cpp
 git clone https://github.com/ggerganov/llama.cpp.git
 ```
+
+### Acceleration Backend
+- **Linux/WSL:** Build with `GGML_CUDA=ON` (requires NVIDIA GPU).
+- **macOS:** Build with `GGML_METAL=ON` (optimized for Apple Silicon).
+- **Fallback:** Standard CPU build.
 
 ## Build with CUDA (you need a NVIDIA GPU)
 
