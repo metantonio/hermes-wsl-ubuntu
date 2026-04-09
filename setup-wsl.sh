@@ -151,11 +151,14 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Setting permissions..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
+echo ""
+echo "change permissions of $AI_OPT_DIR/build/bin/llama-server to 755"
 sudo chmod -R 755 "$AI_OPT_DIR/build/bin/llama-server"
-
+echo "done"
 # Optional: make sure user can access
+echo "change ownership of $MODEL_DIR to $USER:$USER"
 sudo chown -R $USER:$USER "$MODEL_DIR" 2>/dev/null || true
+echo "done"
 
 # ----------------------------
 #  Models (user space)
@@ -324,6 +327,8 @@ fi
 
 
 echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Please complete the hermes setup manually, doing:"
 echo "hermes setup"
 echo "then, check the variables to change in the .env file: https://github.com/metantonio/hermes-wsl-ubuntu?tab=readme-ov-file#config"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
