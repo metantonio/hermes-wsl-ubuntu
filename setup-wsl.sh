@@ -367,10 +367,13 @@ if [ "$start_llama" == "y" ]; then
     echo "Model Selection for Server"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
-    # List models
+    # List models safely
+    set +e
+    echo "DEBUG: Checking $MODEL_DIR for models..."
     shopt -s nullglob
     models=("$MODEL_DIR"/*.gguf)
     shopt -u nullglob
+    set -e
 
     if [ ${#models[@]} -eq 0 ]; then
         echo "No models found in $MODEL_DIR. Skipping server start."
