@@ -16,6 +16,7 @@ CAMOFOX_DETECTION="no"
 LLM_MODEL=""
 WEB_UI_HERMES_DIR="$HOME/hermes-hudui"
 CACHE_TYPE="q4_0"
+NCMOE="no"
 
 # Prompt for Model Directory
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -222,8 +223,9 @@ echo "3) Omnicoder:9B-Q4_K_M.gguf (6.52 GB) (12GB GPU)"
 echo "4) Gemma4:E4B-Q4_K_M.gguf (4.98 GB) (8-12GB GPU)"
 echo "5) Carnice-9b-GGUF-Q6_K.gguf (7.36 GB) (Fine-tuned for Hermes, 16GB GPU)"
 echo "6) Carnice-9b-GGUF-Q4_K_M.gguf (6.50 GB) (Fine-tuned for Hermes, 12GB GPU)"
-echo "7) Skip"
-read -p "Choose [1-7]: " choice
+echo "7) Qwen3.6-35B-A3B-UD-Q4_K_S.gguf (20.9 GB) (8-16GB GPU, with KV cache offloading)"
+echo "8) Skip"
+read -p "Choose [1-8]: " choice
 
 if [ "$choice" == "1" ]; then
     echo "Downloading model..."
@@ -265,6 +267,14 @@ if [ "$choice" == "6" ]; then
     wget https://huggingface.co/kai-os/Carnice-9b-GGUF/resolve/main/Carnice-9b-Q4_K_M.gguf
     LLM_MODEL="Carnice-9b-Q4_K_M.gguf"
     CACHE_TYPE="q4_0"
+fi
+
+if [ "$choice" == "7" ]; then
+    echo "Downloading model..."
+    wget https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q4_K_S.gguf
+    LLM_MODEL="Qwen3.6-35B-A3B-UD-Q4_K_S.gguf"
+    CACHE_TYPE="q8_0"
+    NCMOE="99"
 fi
 
 # ----------------------------
