@@ -357,6 +357,7 @@ fi
 #  Install Web UI Hermes in ~/hermes-hudui will be on port 3001
 # ----------------------------
 echo ""
+cd "$HOME"
 if [ ! -d "$WEB_UI_HERMES_DIR" ]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Cloning Web UI Hermes into ~/hermes-hudui..."
