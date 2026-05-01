@@ -162,6 +162,11 @@ if [ -d "build" ]; then
     read -p "llama.cpp build directory already exists. Rebuild? (y/n): " rebuild_choice
     if [ "$rebuild_choice" != "y" ]; then
         SHOULD_BUILD=false
+    else
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Updating llama.cpp repository..."
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        sudo git pull
     fi
 fi
 
