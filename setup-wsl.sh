@@ -428,12 +428,19 @@ if [ "$start_llama" == "y" ]; then
                 CACHE_TYPE="${CACHE_TYPE:-q4_0}"
             fi
             
+            # Detect MoE based on filename
+            MOE_FLAG=""
+            if [[ "$SELECTED_BASENAME" == *"A3B"* ]] || [[ "$SELECTED_BASENAME" == *"MoE"* ]] || [[ "$SELECTED_BASENAME" == *"moe"* ]]; then
+                MOE_FLAG="-ncmoe 99"
+                echo "MoE model detected: adding $MOE_FLAG"
+            fi
+            
             echo "Using Cache Type: $CACHE_TYPE"
             echo "Llama.cpp server will be running at http://localhost:8080"
             # Using AI_OPT_DIR variable for consistency
-            $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c 131072 -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE --host 127.0.0.1 > llama-server.log 2>&1 &
+            $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c 131072 -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE $MOE_FLAG -tb 24 --host 127.0.0.1 > llama-server.log 2>&1 &
             echo "Server started in background. Logs: llama-server.log"
-            echo "To stop Llama server run: sudo fuser -k 8080/tcp"
+            echo "To stop Llama server run: sudo fuser -k 8080/tcp \n or sudo pkill -f llama-server"
         else
             echo "Invalid selection. Skipping server start."
         fi
