@@ -9,12 +9,24 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 # ----------------------------
 #  Variables
 # ----------------------------
-HERMES_INSTALL_DIR="$HOME/.hermes"
+if [ -n "$SUDO_USER" ]; then
+    REAL_USER="$SUDO_USER"
+    if command -v getent &> /dev/null; then
+        REAL_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+    else
+        REAL_HOME=$(eval echo ~$SUDO_USER)
+    fi
+else
+    REAL_USER="$USER"
+    REAL_HOME="$HOME"
+fi
+
+HERMES_INSTALL_DIR="$REAL_HOME/.hermes"
 AI_OPT_DIR="/opt/llamaCPP"
 CAMOFOX_DIR="/opt/camofox"
 CAMOFOX_DETECTION="no"
 LLM_MODEL=""
-WEB_UI_HERMES_DIR="$HOME/hermes-hudui"
+WEB_UI_HERMES_DIR="$REAL_HOME/hermes-hudui"
 CACHE_TYPE="q4_0"
 NCMOE="no"
 
@@ -22,11 +34,11 @@ NCMOE="no"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Configuration"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-read -p "Enter the directory for LLM models [default: $HOME/models]: " input_dir
-MODEL_DIR="${input_dir:-$HOME/models}"
+read -p "Enter the directory for LLM models [default: $REAL_HOME/models]: " input_dir
+MODEL_DIR="${input_dir:-$REAL_HOME/models}"
 
 # Expand tilde if present
-MODEL_DIR="${MODEL_DIR/#\~/$HOME}"
+MODEL_DIR="${MODEL_DIR/#\~/$REAL_HOME}"
 
 if [ ! -d "$MODEL_DIR" ]; then
     echo "Creating directory: $MODEL_DIR"
@@ -204,8 +216,8 @@ echo "change permissions of $AI_OPT_DIR/build/bin/llama-server to 755"
 sudo chmod -R 755 "$AI_OPT_DIR/build/bin/llama-server"
 echo "done"
 # Optional: make sure user can access
-echo "change ownership of $MODEL_DIR to $USER:$USER"
-sudo chown -R $USER:$USER "$MODEL_DIR" 2>/dev/null || true
+echo "change ownership of $MODEL_DIR to $REAL_USER:$REAL_USER"
+sudo chown -R $REAL_USER:$REAL_USER "$MODEL_DIR" 2>/dev/null || true
 echo "done"
 
 # ----------------------------
@@ -288,7 +300,7 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Main Setup complete!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-cd "$HOME"
+cd "$REAL_HOME"
 echo ""
 
 # ----------------------------
@@ -347,9 +359,9 @@ if [ "$enable_api" == "y" ]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Enabling Hermes API server..."
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "API_SERVER_ENABLED=true" >> ~/.hermes/.env
-    echo "API_SERVER_KEY=change-me-local-dev" >> ~/.hermes/.env
-    echo "Hermes API server enabled in ~/.hermes/.env and running at http://127.0.0.1:8642"
+    echo "API_SERVER_ENABLED=true" >> "$REAL_HOME/.hermes/.env"
+    echo "API_SERVER_KEY=change-me-local-dev" >> "$REAL_HOME/.hermes/.env"
+    echo "Hermes API server enabled in $REAL_HOME/.hermes/.env and running at http://127.0.0.1:8642"
     echo "REMEMBER: Change the API_SERVER_KEY manually for security."
 fi
 
@@ -357,7 +369,7 @@ fi
 #  Install Web UI Hermes in ~/hermes-hudui will be on port 3001
 # ----------------------------
 echo ""
-cd "$HOME"
+cd "$REAL_HOME"
 if [ ! -d "$WEB_UI_HERMES_DIR" ]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Cloning Web UI Hermes into ~/hermes-hudui..."
