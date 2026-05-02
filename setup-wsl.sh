@@ -457,7 +457,7 @@ if [ "$start_llama" == "y" ]; then
             echo "Using Cache Type: $CACHE_TYPE"
             echo "Llama.cpp server will be running at http://localhost:8080"
             # Using AI_OPT_DIR variable for consistency
-            $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c 131072 -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE $MOE_FLAG $THREADS_FLAG -tb 24 --jinja --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
+            $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c 131072 -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE $MOE_FLAG $THREADS_FLAG -tb 24 --no-warmup --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
             echo "Server started in background. Logs: llama-server.log"
             echo "To stop Llama server run: sudo fuser -k 8080/tcp \n or sudo pkill -f llama-server"
         else
