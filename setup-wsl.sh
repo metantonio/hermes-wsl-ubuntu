@@ -289,7 +289,7 @@ if [ "$choice" == "7" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q4_K_S.gguf
     LLM_MODEL="Qwen3.6-35B-A3B-UD-Q4_K_S.gguf"
-    CACHE_TYPE="q8_0"
+    CACHE_TYPE="q4_0"
     NCMOE="99"
 fi
 
@@ -449,7 +449,7 @@ if [ "$start_llama" == "y" ]; then
             MOE_FLAG=""
             THREADS_FLAG=""
             if [[ "$SELECTED_BASENAME" == *"A3B"* ]] || [[ "$SELECTED_BASENAME" == *"MoE"* ]] || [[ "$SELECTED_BASENAME" == *"moe"* ]]; then
-                MOE_FLAG="-ncmoe 99"
+                MOE_FLAG="-ncmoe 25"
                 THREADS_FLAG="-t 8"
                 echo "MoE model detected: adding $MOE_FLAG"
             fi
