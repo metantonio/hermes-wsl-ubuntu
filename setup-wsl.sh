@@ -240,8 +240,9 @@ echo "4) Gemma4:E4B-Q4_K_M.gguf (4.98 GB) (8-12GB GPU)"
 echo "5) Carnice-9b-GGUF-Q6_K.gguf (7.36 GB) (Fine-tuned for Hermes, 16GB GPU)"
 echo "6) Carnice-9b-GGUF-Q4_K_M.gguf (6.50 GB) (Fine-tuned for Hermes, 12GB GPU)"
 echo "7) Qwen3.6-35B-A3B-UD-Q4_K_S.gguf (20.9 GB) (8-16GB GPU, with KV cache offloading)"
-echo "8) Skip"
-read -p "Choose [1-8]: " choice
+echo "8) Qwen3.5-0.8B-Q4_K_M.gguf (533 MB) (4GB GPU or as drafting model for Qwen models)"
+echo "9) Skip"
+read -p "Choose [1-9]: " choice
 
 if [ "$choice" == "1" ]; then
     echo "Downloading model..."
@@ -293,6 +294,13 @@ if [ "$choice" == "7" ]; then
     NCMOE="99"
 fi
 
+if [ "$choice" == "8" ]; then
+    echo "Downloading model..."
+    wget https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf
+    LLM_MODEL="Qwen3.5-0.8B-Q4_K_M.gguf"
+    CACHE_TYPE="q4_0"
+fi
+
 # ----------------------------
 #  Main Setup Done
 # ----------------------------
@@ -327,76 +335,6 @@ if [ "$CAMOFOX_DETECTION" = "yes" ]; then
         npm start > camofox.log 2>&1 &
         echo "Camofox will be running at http://localhost:9377"
         echo "to stop Camofox server run: sudo fuser -k 9377/tcp"
-    fi
-fi
-
-# ----------------------------
-#  Setup Hermes variables
-# ----------------------------
-
-echo ""
-echo "Setup Hermes variables in order to use llama.cpp server? (y/n)"
-read -p "Choose [y/N]: " hermesvariables
-
-if [ "$hermesvariables" == "y" ]; then
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "Setting up Hermes variables..."
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    hermes config set OPENAI_BASE_URL http://localhost:8080/v1
-    hermes config set OPENAI_API_KEY dummy
-    hermes config set LLM_MODEL $LLM_MODEL
-fi
-
-# ----------------------------
-#  Enable Hermes API server
-# ----------------------------
-
-echo ""
-echo "Enable Hermes API server on http://127.0.0.1:8642? (y/n)"
-read -p "Choose [y/N]: " enable_api
-
-if [ "$enable_api" == "y" ]; then
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "Enabling Hermes API server..."
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "API_SERVER_ENABLED=true" >> "$REAL_HOME/.hermes/.env"
-    echo "API_SERVER_KEY=change-me-local-dev" >> "$REAL_HOME/.hermes/.env"
-    echo "Hermes API server enabled in $REAL_HOME/.hermes/.env and running at http://127.0.0.1:8642"
-    echo "REMEMBER: Change the API_SERVER_KEY manually for security."
-fi
-
-# ----------------------------
-#  Install Web UI Hermes in ~/hermes-hudui will be on port 3001
-# ----------------------------
-echo ""
-cd "$REAL_HOME"
-if [ ! -d "$WEB_UI_HERMES_DIR" ]; then
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "Cloning Web UI Hermes into ~/hermes-hudui..."
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    sudo git clone https://github.com/joeynyc/hermes-hudui.git "$WEB_UI_HERMES_DIR"
-    cd "$WEB_UI_HERMES_DIR"
-    python3.11 -m venv venv
-    source venv/bin/activate
-    ./install.sh
-    read -p "Do you want to start the web ui hermes? (y/n)" start_webui
-    if [ "$start_webui" == "y" ]; then
-        echo "Hermes HDUI will be running at http://localhost:3001"
-        hermes-hudui > hermes-hudui.log 2>&1 &
-        echo "To stop Web UI run: sudo fuser -k 3001/tcp"
-    fi
-else
-    echo "Web UI Hermes already installed"
-    read -p "Do you want to start the web ui hermes? (y/n)" start_webui
-    if [ "$start_webui" == "y" ]; then
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Starting Web UI Hermes..."
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        cd "$WEB_UI_HERMES_DIR"
-        source venv/bin/activate
-        echo "Hermes HDUI will be running at http://localhost:3001"
-        hermes-hudui > hermes-hudui.log 2>&1 &
-        echo "To stop Web UI run: sudo fuser -k 3001/tcp"
     fi
 fi
 
@@ -454,10 +392,27 @@ if [ "$start_llama" == "y" ]; then
                 echo "MoE model detected: adding $MOE_FLAG"
             fi
             
+            DRAFT_FLAGS="--spec-type ngram-map --draft-max 12"
+            read -p "Do you want to use a draft model? (y/n): " use_draft
+            if [ "$use_draft" == "y" ]; then
+                echo "Available models in $MODEL_DIR for draft:"
+                for i in "${!models[@]}"; do
+                    echo "$((i+1))) $(basename "${models[$i]}")"
+                done
+                read -p "Select a draft model [1-${#models[@]}]: " draft_idx
+                if [[ "$draft_idx" =~ ^[0-9]+$ ]] && [ "$draft_idx" -ge 1 ] && [ "$draft_idx" -le "${#models[@]}" ]; then
+                    SELECTED_DRAFT="${models[$((draft_idx-1))]}"
+                    DRAFT_FLAGS="--model-draft $SELECTED_DRAFT --draft-max 16"
+                    echo "Selected draft model: $(basename "$SELECTED_DRAFT")"
+                else
+                    echo "Invalid draft selection. Proceeding without draft model."
+                fi
+            fi
+            
             echo "Using Cache Type: $CACHE_TYPE"
             echo "Llama.cpp server will be running at http://localhost:8080"
             # Using AI_OPT_DIR variable for consistency
-            $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c 131072 -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE $MOE_FLAG $THREADS_FLAG -tb 24 --no-warmup --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
+            $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c 131072 -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE $MOE_FLAG $THREADS_FLAG -tb 24 --no-warmup $DRAFT_FLAGS --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
             echo "Server started in background. Logs: llama-server.log"
             echo "To stop Llama server run: sudo fuser -k 8080/tcp \n or sudo pkill -f llama-server"
         else
@@ -466,6 +421,40 @@ if [ "$start_llama" == "y" ]; then
     fi
 fi
 
+# ----------------------------
+#  Setup Hermes variables
+# ----------------------------
+
+echo ""
+echo "Setup Hermes variables in order to use llama.cpp server? (y/n)"
+read -p "Choose [y/N]: " hermesvariables
+
+if [ "$hermesvariables" == "y" ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Setting up Hermes variables..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    hermes config set OPENAI_BASE_URL http://localhost:8080/v1
+    hermes config set OPENAI_API_KEY dummy
+    #hermes config set LLM_MODEL $LLM_MODEL
+fi
+
+# ----------------------------
+#  Enable Hermes API server
+# ----------------------------
+
+echo ""
+echo "Enable Hermes API server on http://127.0.0.1:8642? (y/n)"
+read -p "Choose [y/N]: " enable_api
+
+if [ "$enable_api" == "y" ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Enabling Hermes API server..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "API_SERVER_ENABLED=true" >> "$REAL_HOME/.hermes/.env"
+    echo "API_SERVER_KEY=change-me-local-dev" >> "$REAL_HOME/.hermes/.env"
+    echo "Hermes API server enabled in $REAL_HOME/.hermes/.env and running at http://127.0.0.1:8642"
+    echo "REMEMBER: Change the API_SERVER_KEY manually for security."
+fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
