@@ -392,7 +392,7 @@ if [ "$start_llama" == "y" ]; then
                 echo "MoE model detected: adding $MOE_FLAG"
             fi
             
-            DRAFT_FLAGS="--spec-type ngram-map --draft-max 12"
+            DRAFT_FLAGS="--spec-type ngram-map --spec-draft-n-max 12"
             read -p "Do you want to use a draft model? (y/n): " use_draft
             if [ "$use_draft" == "y" ]; then
                 echo "Available models in $MODEL_DIR for draft:"
@@ -402,7 +402,7 @@ if [ "$start_llama" == "y" ]; then
                 read -p "Select a draft model [1-${#models[@]}]: " draft_idx
                 if [[ "$draft_idx" =~ ^[0-9]+$ ]] && [ "$draft_idx" -ge 1 ] && [ "$draft_idx" -le "${#models[@]}" ]; then
                     SELECTED_DRAFT="${models[$((draft_idx-1))]}"
-                    DRAFT_FLAGS="--model-draft $SELECTED_DRAFT --draft-max 16"
+                    DRAFT_FLAGS="--model-draft $SELECTED_DRAFT --spec-draft-n-max 16"
                     echo "Selected draft model: $(basename "$SELECTED_DRAFT")"
                 else
                     echo "Invalid draft selection. Proceeding without draft model."
