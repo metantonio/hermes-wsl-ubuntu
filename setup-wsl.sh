@@ -328,13 +328,17 @@ else
 fi
 
 if [ "$CAMOFOX_DETECTION" = "yes" ]; then
-    echo "Do you want to start camofox browser server? (y/n)"
-    read -p "Choose [y/n]: " choice
-    if [ "$choice" == "y" ]; then
-        cd "$CAMOFOX_DIR"
-        npm start > camofox.log 2>&1 &
-        echo "Camofox will be running at http://localhost:9377"
-        echo "to stop Camofox server run: sudo fuser -k 9377/tcp"
+    if ps aux | grep -i "[c]amofox" > /dev/null; then
+        echo "Camofox is already running."
+    else
+        echo "Do you want to start camofox browser server? (y/n)"
+        read -p "Choose [y/n]: " choice
+        if [ "$choice" == "y" ]; then
+            cd "$CAMOFOX_DIR"
+            npm start > camofox.log 2>&1 &
+            echo "Camofox will be running at http://localhost:9377"
+            echo "to stop Camofox server run: sudo fuser -k 9377/tcp"
+        fi
     fi
 fi
 
