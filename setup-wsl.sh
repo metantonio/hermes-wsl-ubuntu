@@ -413,10 +413,35 @@ if [ "$start_llama" == "y" ]; then
                 fi
             fi
             
+            echo ""
+            echo "Select Context Size for the model:"
+            echo "1) 4k (4096)"
+            echo "2) 8k (8192)"
+            echo "3) 32k (32768)"
+            echo "4) 64k (65536)"
+            echo "5) 128k (131072) [Default]"
+            echo "6) 256k (262144)"
+            echo "7) 512k (524288)"
+            echo "8) 1M (1048576)"
+            read -p "Choose [1-8, default: 5]: " ctx_choice
+            
+            case "$ctx_choice" in
+                1) CTX_SIZE="4096" ;;
+                2) CTX_SIZE="8192" ;;
+                3) CTX_SIZE="32768" ;;
+                4) CTX_SIZE="65536" ;;
+                5) CTX_SIZE="131072" ;;
+                6) CTX_SIZE="262144" ;;
+                7) CTX_SIZE="524288" ;;
+                8) CTX_SIZE="1048576" ;;
+                *) CTX_SIZE="131072" ;;
+            esac
+            echo "Selected Context Size: $CTX_SIZE"
+            
             echo "Using Cache Type: $CACHE_TYPE"
             echo "Llama.cpp server will be running at http://localhost:8080"
             # Using AI_OPT_DIR variable for consistency
-            $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c 131072 -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE $MOE_FLAG $THREADS_FLAG -tb 24 --no-warmup $DRAFT_FLAGS --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
+            $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c $CTX_SIZE -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE $MOE_FLAG $THREADS_FLAG -tb 24 --no-warmup $DRAFT_FLAGS --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
             echo "Server started in background. Logs: llama-server.log"
             echo "To stop Llama server run: sudo fuser -k 8080/tcp \n or sudo pkill -f llama-server"
         else
