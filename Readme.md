@@ -69,13 +69,13 @@ flowchart LR
 
 # Automatic installation
 
-If you are in **Linux** or **macOS**, execute the following script to install CUDA (if applicable), Hermes, llama.cpp, Camofox and the Web UI. The script will automatically detect your platform.
+If you are in **Ubuntu** (WSL2) or **macOS**, execute the following script to install CUDA (if applicable), Hermes, llama.cpp, and Camofox. The script will automatically detect your platform.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/metantonio/hermes-wsl-ubuntu/master/setup-wsl.sh -o setup-wsl.sh && bash setup-wsl.sh
 ```
 
-Note: Added installation of ik_llama.cpp fork in another script: **fork_ik-llamacpp.sh**.
+Note: Added installation of **ik_llama.cpp** fork in another script: **fork_ik-llamacpp.sh**.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/metantonio/hermes-wsl-ubuntu/master/fork_ik-llamacpp.sh -o fork_ik-llamacpp.sh && bash fork_ik-llamacpp.sh
