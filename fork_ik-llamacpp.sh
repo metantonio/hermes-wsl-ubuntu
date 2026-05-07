@@ -291,7 +291,7 @@ if [ "$start_llama" == "y" ]; then
                 echo "MoE model detected: adding $MOE_FLAG"
             fi
             
-            DRAFT_FLAGS="--spec-type ngram-mod --spec-ngram-mod-n-max 12"
+            DRAFT_FLAGS="--spec-type ngram-mod"
             read -p "Do you want to use a draft model? (y/n): " use_draft
             if [ "$use_draft" == "y" ]; then
                 echo "Available models in $MODEL_DIR for draft:"
