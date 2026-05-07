@@ -349,6 +349,9 @@ fi
 echo ""
 read -p "Do you want to start the llama.cpp server? (y/n)" start_llama
 if [ "$start_llama" == "y" ]; then
+    echo ""
+    echo "Checking if there is a llama.cpp server running on localhost:8080..."
+    sudo fuser -k 8080/tcp
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Model Selection for Server"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -440,7 +443,7 @@ if [ "$start_llama" == "y" ]; then
             echo "Selected Context Size: $CTX_SIZE"
             
             echo "Using Cache Type: $CACHE_TYPE"
-            sudo fuser -k 8080/tcp
+            
             echo "Llama.cpp server will be running at http://localhost:8080"
             # Using AI_OPT_DIR variable for consistency
             $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c $CTX_SIZE -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE $MOE_FLAG $THREADS_FLAG -tb 24 --no-warmup $DRAFT_FLAGS --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
