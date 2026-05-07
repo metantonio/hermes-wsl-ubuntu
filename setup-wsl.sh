@@ -221,7 +221,7 @@ sudo chown -R $REAL_USER:$REAL_USER "$MODEL_DIR" 2>/dev/null || true
 echo "done"
 
 # ----------------------------
-#  Models (user space)
+#  Download Models (user space)
 # ----------------------------
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -233,60 +233,61 @@ cd "$MODEL_DIR"
 
 echo ""
 echo "Model options to download (from HuggingFace):"
-echo "1) Qwen3.5-9B-Q4_K_M.gguf (5.5 GB) (12GB GPU)"
-echo "2) Qwen3.5-9B-Q5_K_M.gguf (6.5 GB) (12-16GB GPU)"
-echo "3) Omnicoder:9B-Q4_K_M.gguf (6.52 GB) (12GB GPU)"
-echo "4) Gemma4:E4B-Q4_K_M.gguf (4.98 GB) (8-12GB GPU)"
-echo "5) Carnice-9b-GGUF-Q6_K.gguf (7.36 GB) (Fine-tuned for Hermes, 16GB GPU)"
-echo "6) Carnice-9b-GGUF-Q4_K_M.gguf (6.50 GB) (Fine-tuned for Hermes, 12GB GPU)"
-echo "7) Qwen3.6-35B-A3B-UD-Q4_K_S.gguf (20.9 GB) (8-16GB GPU, with KV cache offloading)"
-echo "8) Qwen3.5-0.8B-Q4_K_M.gguf (533 MB) (4GB GPU or as drafting model for Qwen models)"
+[ ! -f "Qwen3.5-9B-Q4_K_M.gguf" ] && echo "1) Qwen3.5-9B-Q4_K_M.gguf (5.5 GB) (12GB GPU)"
+[ ! -f "Qwen3.5-9B-Q5_K_M.gguf" ] && echo "2) Qwen3.5-9B-Q5_K_M.gguf (6.5 GB) (12-16GB GPU)"
+[ ! -f "omnicoder-9b-q5_k_m.gguf" ] && echo "3) Omnicoder:9B-Q4_K_M.gguf (6.52 GB) (12GB GPU)"
+[ ! -f "gemma-4-E4B-it-q4_k_m.gguf" ] && echo "4) Gemma4:E4B-Q4_K_M.gguf (4.98 GB) (8-12GB GPU)"
+[ ! -f "Carnice-9b-Q6_K.gguf" ] && echo "5) Carnice-9b-GGUF-Q6_K.gguf (7.36 GB) (Fine-tuned for Hermes, 16GB GPU)"
+[ ! -f "Carnice-9b-Q4_K_M.gguf" ] && echo "6) Carnice-9b-GGUF-Q4_K_M.gguf (6.50 GB) (Fine-tuned for Hermes, 12GB GPU)"
+[ ! -f "Qwen3.6-35B-A3B-UD-Q4_K_S.gguf" ] && echo "7) Qwen3.6-35B-A3B-UD-Q4_K_S.gguf (20.9 GB) (8-16GB GPU, with KV cache offloading)"
+[ ! -f "Qwen3.5-0.8B-Q4_K_M.gguf" ] && echo "8) Qwen3.5-0.8B-Q4_K_M.gguf (533 MB) (4GB GPU or as drafting model for Qwen models)"
 echo "9) Skip"
-read -p "Choose [1-9]: " choice
+read -p "Choose [1-9, default: 9]: " choice
+choice=${choice:-9}
 
-if [ "$choice" == "1" ]; then
+if [ "$choice" == "1" ] && [ ! -f "Qwen3.5-9B-Q4_K_M.gguf" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf
     LLM_MODEL="Qwen3.5-9B-Q4_K_M.gguf"
     CACHE_TYPE="q4_0"
 fi
 
-if [ "$choice" == "2" ]; then
+if [ "$choice" == "2" ] && [ ! -f "Qwen3.5-9B-Q5_K_M.gguf" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q5_K_M.gguf
     LLM_MODEL="Qwen3.5-9B-Q5_K_M.gguf"  
     CACHE_TYPE="q5_0"
 fi
 
-if [ "$choice" == "3" ]; then
+if [ "$choice" == "3" ] && [ ! -f "omnicoder-9b-q5_k_m.gguf" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/Tesslate/OmniCoder-9B-GGUF/resolve/main/omnicoder-9b-q5_k_m.gguf
     LLM_MODEL="omnicoder-9b-q5_k_m.gguf"
     CACHE_TYPE="q5_0"
 fi
 
-if [ "$choice" == "4" ]; then
+if [ "$choice" == "4" ] && [ ! -f "gemma-4-E4B-it-q4_k_m.gguf" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF/resolve/main/gemma-4-E4B-it-q4_k_m.gguf
     LLM_MODEL="gemma-4-E4B-it-q4_k_m.gguf"
     CACHE_TYPE="q4_0"
 fi
 
-if [ "$choice" == "5" ]; then
+if [ "$choice" == "5" ] && [ ! -f "Carnice-9b-Q6_K.gguf" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/kai-os/Carnice-9b-GGUF/resolve/main/Carnice-9b-Q6_K.gguf
     LLM_MODEL="Carnice-9b-Q6_K.gguf"
     CACHE_TYPE="q8_0"
 fi
 
-if [ "$choice" == "6" ]; then
+if [ "$choice" == "6" ] && [ ! -f "Carnice-9b-Q4_K_M.gguf" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/kai-os/Carnice-9b-GGUF/resolve/main/Carnice-9b-Q4_K_M.gguf
     LLM_MODEL="Carnice-9b-Q4_K_M.gguf"
     CACHE_TYPE="q4_0"
 fi
 
-if [ "$choice" == "7" ]; then
+if [ "$choice" == "7" ] && [ ! -f "Qwen3.6-35B-A3B-UD-Q4_K_S.gguf" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF/resolve/main/Qwen3.6-35B-A3B-UD-Q4_K_S.gguf
     LLM_MODEL="Qwen3.6-35B-A3B-UD-Q4_K_S.gguf"
@@ -294,7 +295,7 @@ if [ "$choice" == "7" ]; then
     NCMOE="99"
 fi
 
-if [ "$choice" == "8" ]; then
+if [ "$choice" == "8" ] && [ ! -f "Qwen3.5-0.8B-Q4_K_M.gguf" ]; then
     echo "Downloading model..."
     wget https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf
     LLM_MODEL="Qwen3.5-0.8B-Q4_K_M.gguf"
@@ -439,6 +440,7 @@ if [ "$start_llama" == "y" ]; then
             echo "Selected Context Size: $CTX_SIZE"
             
             echo "Using Cache Type: $CACHE_TYPE"
+            sudo fuser -k 8080/tcp
             echo "Llama.cpp server will be running at http://localhost:8080"
             # Using AI_OPT_DIR variable for consistency
             $AI_OPT_DIR/build/bin/llama-server -m "$SELECTED_MODEL" -ngl 99 -c $CTX_SIZE -np 1 -fa on --cache-type-k $CACHE_TYPE --cache-type-v $CACHE_TYPE $MOE_FLAG $THREADS_FLAG -tb 24 --no-warmup $DRAFT_FLAGS --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
