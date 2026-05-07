@@ -7,7 +7,7 @@
 
 **Author:** Antonio Martinez
 **Date:** March 18, 2026
-**Updated:** April 9, 2026
+**Updated:** May 7, 2026
 
 > End-to-end setup for running **Hermes Agent + llama.cpp + Qwen3.5** locally with GPU acceleration (**CUDA** for Linux/WSL, **Metal** for macOS).
 
