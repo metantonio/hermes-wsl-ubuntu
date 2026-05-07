@@ -319,13 +319,15 @@ echo ""
 if [ ! -d "$CAMOFOX_DIR" ]; then
     echo "Cloning camofox into /opt..."
     sudo git clone https://github.com/jo-inc/camofox-browser "$CAMOFOX_DIR"
+    sudo chown -R $REAL_USER:$REAL_USER "$CAMOFOX_DIR"
     cd "$CAMOFOX_DIR"
-    sudo npm install && npm start > camofox.log 2>&1 &
+    npm install && npm start > camofox.log 2>&1 &
     echo "Camofox will be running at http://localhost:9377"
     echo "to stop Camofox server run: sudo fuser -k 9377/tcp"
 else
     echo "Camofox already installed"
     CAMOFOX_DETECTION="yes"
+    sudo chown -R $REAL_USER:$REAL_USER "$CAMOFOX_DIR" 2>/dev/null || true
 fi
 
 if [ "$CAMOFOX_DETECTION" = "yes" ]; then
