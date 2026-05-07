@@ -216,7 +216,6 @@ read -p "Choose [1-2]: " choice
 
 if [ "$choice" == "1" ]; then
     echo "Downloading model..."
-    wget https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf
     wget https://huggingface.co/abovespec/Qwen3.6-35B-A3B-IQ3_K_R4-GGUF/resolve/main/Qwen3.6-35B-A3B-IQ3_K_R4.gguf
     LLM_MODEL=" Qwen3.6-35B-A3B-IQ3_K_R4.gguf"
     CACHE_TYPE="q4_0"
