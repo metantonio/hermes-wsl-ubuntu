@@ -351,7 +351,8 @@ read -p "Do you want to start the llama.cpp server? (y/n)" start_llama
 if [ "$start_llama" == "y" ]; then
     echo ""
     echo "Checking if there is a llama.cpp server running on localhost:8080..."
-    sudo fuser -k 8080/tcp
+    sudo fuser -k 8080/tcp || true
+    sleep 2
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Model Selection for Server"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
