@@ -401,7 +401,7 @@ if [ "$start_llama" == "y" ]; then
             THREADS_FLAG=""
             if [[ "$SELECTED_BASENAME" == *"A3B"* ]] || [[ "$SELECTED_BASENAME" == *"MoE"* ]] || [[ "$SELECTED_BASENAME" == *"moe"* ]]; then
                 echo ""
-                echo "MoE model detected. Select the value for -ncmoe:"
+                echo "MoE model detected. Select the value for -ncmoe (Layers of the model to offload to CPU):"
                 echo "1) 25 [Default]"
                 echo "2) 28"
                 echo "3) 30"
