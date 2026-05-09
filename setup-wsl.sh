@@ -400,9 +400,76 @@ if [ "$start_llama" == "y" ]; then
             MOE_FLAG=""
             THREADS_FLAG=""
             if [[ "$SELECTED_BASENAME" == *"A3B"* ]] || [[ "$SELECTED_BASENAME" == *"MoE"* ]] || [[ "$SELECTED_BASENAME" == *"moe"* ]]; then
-                MOE_FLAG="-ncmoe 25"
-                THREADS_FLAG="-t 12"
-                echo "MoE model detected: adding $MOE_FLAG"
+                echo ""
+                echo "MoE model detected. Select the value for -ncmoe:"
+                echo "1) 25 [Default]"
+                echo "2) 28"
+                echo "3) 30"
+                echo "4) 32"
+                echo "5) 36"
+                echo "6) 40"
+                echo "7) 48"
+                read -p "Choose [1-7, default: 1]: " ncmoe_choice
+                
+                case "$ncmoe_choice" in
+                    1) NCMOE_VAL="25" ;;
+                    2) NCMOE_VAL="28" ;;
+                    3) NCMOE_VAL="30" ;;
+                    4) NCMOE_VAL="32" ;;
+                    5) NCMOE_VAL="36" ;;
+                    6) NCMOE_VAL="40" ;;
+                    7) NCMOE_VAL="48" ;;
+                    *) NCMOE_VAL="25" ;;
+                esac
+                MOE_FLAG="-ncmoe $NCMOE_VAL"
+                
+                if [ "$OS" == "macos" ]; then
+                    TOTAL_THREADS=$(sysctl -n hw.logicalcpu 2>/dev/null || echo 8)
+                else
+                    TOTAL_THREADS=$(nproc 2>/dev/null || echo 8)
+                fi
+                MAX_THREADS=$((TOTAL_THREADS - 4))
+                if [ "$MAX_THREADS" -lt 6 ]; then
+                    MAX_THREADS=$TOTAL_THREADS
+                fi
+                
+                echo ""
+                echo "Select the number of threads (-t) for the MoE model:"
+                echo "Total CPU threads: $TOTAL_THREADS (Recommended max: $MAX_THREADS)"
+                
+                T_OPTS=()
+                idx=1
+                for (( t=6; t<=MAX_THREADS; t+=2 )); do
+                    T_OPTS+=($t)
+                    if [ "$t" -eq 12 ]; then
+                        echo "$idx) $t [Default]"
+                    else
+                        echo "$idx) $t"
+                    fi
+                    ((idx++))
+                done
+                
+                if [ ${#T_OPTS[@]} -eq 0 ]; then
+                    T_OPTS+=($TOTAL_THREADS)
+                    echo "1) $TOTAL_THREADS [Default]"
+                    idx=2
+                fi
+                
+                read -p "Choose [1-$((idx-1)), default: 12]: " thread_choice
+                
+                if [[ "$thread_choice" =~ ^[0-9]+$ ]] && [ "$thread_choice" -ge 1 ] && [ "$thread_choice" -lt "$idx" ]; then
+                    T_VAL="${T_OPTS[$((thread_choice-1))]}"
+                else
+                    # Fallback default
+                    T_VAL="12"
+                    # Validate that 12 is within T_OPTS, if not default to MAX_THREADS
+                    if [ "$MAX_THREADS" -lt 12 ]; then
+                        T_VAL="$MAX_THREADS"
+                    fi
+                fi
+                
+                THREADS_FLAG="-t $T_VAL"
+                echo "Adding flags: $MOE_FLAG $THREADS_FLAG"
             fi
             
             DRAFT_FLAGS="--spec-type ngram-mod --spec-ngram-mod-n-max 12"
