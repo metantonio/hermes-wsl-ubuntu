@@ -409,7 +409,8 @@ if [ "$start_llama" == "y" ]; then
                 echo "5) 36"
                 echo "6) 40"
                 echo "7) 48"
-                read -p "Choose [1-7, default: 1]: " ncmoe_choice
+                echo "8) 0 (No offloading)"
+                read -p "Choose [1-8, default: 1]: " ncmoe_choice
                 
                 case "$ncmoe_choice" in
                     1) NCMOE_VAL="25" ;;
@@ -419,6 +420,7 @@ if [ "$start_llama" == "y" ]; then
                     5) NCMOE_VAL="36" ;;
                     6) NCMOE_VAL="40" ;;
                     7) NCMOE_VAL="48" ;;
+                    8) NCMOE_VAL="0" ;;
                     *) NCMOE_VAL="25" ;;
                 esac
                 MOE_FLAG="-ncmoe $NCMOE_VAL"
