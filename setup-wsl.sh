@@ -625,6 +625,7 @@ if [ "$start_llama" == "y" ]; then
                     # Append to INI
                     echo "" >> "$INI_FILE"
                     echo "[$SELECTED_BASENAME]" >> "$INI_FILE"
+                    echo "model = $model_path" >> "$INI_FILE"
                     echo "n-gpu-layers = 99" >> "$INI_FILE"
                     echo "ctx-size = $CTX_SIZE" >> "$INI_FILE"
                     echo "cache-type-k = $CACHE_TYPE" >> "$INI_FILE"
