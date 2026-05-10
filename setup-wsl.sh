@@ -360,8 +360,8 @@ if [ "$start_llama" == "y" ]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Server Mode Selection"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "1) Single Model Mode (Optimized for one specific model)"
-    echo "2) Router Mode (Dynamic switching via API with models.ini)"
+    echo "1) Single Model Mode (Optimized for one specific model, default port 8080)"
+    echo "2) Router Mode (Dynamic switching via API with models.ini, forwarded to port 8080)"
     read -p "Choose [1-2, default: 2]: " srv_mode
     srv_mode=${srv_mode:-2}
 
@@ -759,7 +759,7 @@ if [ "$start_llama" == "y" ]; then
                 echo ""
                 echo "Llama.cpp server will be running in Router Mode at http://localhost:8080"
                 # Using AI_OPT_DIR variable for consistency
-                $AI_OPT_DIR/build/bin/llama-server --models-dir "$MODEL_DIR" --models-preset "$INI_FILE" --models-max 1 -np 1 -fa on -tb 24 --no-warmup --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
+                $AI_OPT_DIR/build/bin/llama-server --models-dir "$MODEL_DIR" --models-preset "$INI_FILE" --models-max 1 -np 1 -fa on -tb 24 --no-warmup --metrics --host 127.0.0.1 --port 8080 > llama-server.log 2>&1 &
                 echo "Server started in background. Logs: llama-server.log"
                 echo "To stop Llama server run: sudo fuser -k 8080/tcp \n or sudo pkill -f llama-server"
                 break
