@@ -34,7 +34,7 @@ NCMOE="no"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Configuration"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-read -p "Enter the directory for LLM models [default: $REAL_HOME/models]: " input_dir
+read -e -p "Enter the directory for LLM models [default: $REAL_HOME/models]: " input_dir
 MODEL_DIR="${input_dir:-$REAL_HOME/models}"
 
 # Expand tilde if present
@@ -225,7 +225,7 @@ echo "done"
 # ----------------------------
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Models (user space)"
+echo "Models to Download"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 mkdir -p "$MODEL_DIR"
 chmod 700 "$MODEL_DIR"
@@ -540,173 +540,233 @@ if [ "$start_llama" == "y" ]; then
         echo "Model Configuration for Server (Router Mode)"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         
-        # List models safely
-        set +e
-        echo "DEBUG: Checking $MODEL_DIR for models..."
-        shopt -s nullglob
-        models=("$MODEL_DIR"/*.gguf)
-        shopt -u nullglob
-        set -e
-
-        if [ ${#models[@]} -eq 0 ]; then
-            echo "No models found in $MODEL_DIR. Skipping server start."
-        else
-            INI_FILE="$MODEL_DIR/models.ini"
-            touch "$INI_FILE"
+        INI_FILE="$MODEL_DIR/models.ini"
+        touch "$INI_FILE"
+        
+        while true; do
+            echo ""
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "Router Mode Configuration Menu"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "1) Configure a model (add or update in models.ini)"
+            echo "2) View current models.ini configuration"
+            echo "3) Delete a model from models.ini"
+            echo "4) Finish configuration and start server"
+            read -p "Choose [1-4, default: 4]: " r_mode
+            r_mode=${r_mode:-4}
             
-            echo "Found ${#models[@]} models. Checking configurations in models.ini..."
-            
-            for model_path in "${models[@]}"; do
-                SELECTED_BASENAME=$(basename "$model_path")
+            if [ "$r_mode" == "1" ]; then
+                set +e
+                shopt -s nullglob
+                models=("$MODEL_DIR"/*.gguf)
+                shopt -u nullglob
+                set -e
                 
-                # Check if section exists in INI
-                if grep -q "\[$SELECTED_BASENAME\]" "$INI_FILE"; then
-                    read -p "Model $SELECTED_BASENAME is already configured. Do you want to re-configure it? (y/N): " reconf
-                    if [[ "$reconf" != "y" && "$reconf" != "Y" ]]; then
-                        continue
-                    fi
+                if [ ${#models[@]} -eq 0 ]; then
+                    echo "No models found in $MODEL_DIR."
+                    continue
                 fi
                 
-                echo "-----------------------------------"
-                echo "Configuring: $SELECTED_BASENAME"
+                echo "Available models in $MODEL_DIR:"
+                for i in "${!models[@]}"; do
+                    echo "$((i+1))) $(basename "${models[$i]}")"
+                done
+                read -p "Select a model [1-${#models[@]}]: " model_idx
                 
-                # Remove old block if exists
-                awk -v sec="[$SELECTED_BASENAME]" '
-                    $0 == sec { in_sec=1; next }
-                    /^\[.*\]/ { in_sec=0 }
-                    !in_sec { print }
-                ' "$INI_FILE" > "$INI_FILE.tmp" && mv "$INI_FILE.tmp" "$INI_FILE"
-                
-                # Cache type
-                if [[ "$SELECTED_BASENAME" == *"Q6"* ]]; then
-                    CACHE_TYPE="q8_0"
-                elif [[ "$SELECTED_BASENAME" == *"Q5"* ]]; then
-                    CACHE_TYPE="q5_0"
-                elif [[ "$SELECTED_BASENAME" == *"Q4"* ]]; then
-                    CACHE_TYPE="q4_0"
-                else
-                    # Default to q4_0
-                    CACHE_TYPE="q4_0"
-                fi
-                
-                echo ""
-                echo "Select Context Size for $SELECTED_BASENAME:"
-                echo "1) 4k (4096)"
-                echo "2) 8k (8192)"
-                echo "3) 32k (32768)"
-                echo "4) 64k (65536)"
-                echo "5) 128k (131072) [Default]"
-                echo "6) 256k (262144)"
-                echo "7) 512k (524288)"
-                echo "8) 1M (1048576)"
-                read -p "Choose [1-8, default: 5]: " ctx_choice
-                
-                case "$ctx_choice" in
-                    1) CTX_SIZE="4096" ;;
-                    2) CTX_SIZE="8192" ;;
-                    3) CTX_SIZE="32768" ;;
-                    4) CTX_SIZE="65536" ;;
-                    5) CTX_SIZE="131072" ;;
-                    6) CTX_SIZE="262144" ;;
-                    7) CTX_SIZE="524288" ;;
-                    8) CTX_SIZE="1048576" ;;
-                    *) CTX_SIZE="131072" ;;
-                esac
-                
-                # Append to INI
-                echo "" >> "$INI_FILE"
-                echo "[$SELECTED_BASENAME]" >> "$INI_FILE"
-                echo "n-gpu-layers = 99" >> "$INI_FILE"
-                echo "ctx-size = $CTX_SIZE" >> "$INI_FILE"
-                echo "cache-type-k = $CACHE_TYPE" >> "$INI_FILE"
-                echo "cache-type-v = $CACHE_TYPE" >> "$INI_FILE"
-                
-                # MoE
-                if [[ "$SELECTED_BASENAME" == *"A3B"* ]] || [[ "$SELECTED_BASENAME" == *"MoE"* ]] || [[ "$SELECTED_BASENAME" == *"moe"* ]]; then
-                    echo ""
-                    echo "MoE model detected. Select the value for -ncmoe (Layers of the model to offload to CPU):"
-                    echo "1) 25 [Default]"
-                    echo "2) 28"
-                    echo "3) 30"
-                    echo "4) 32"
-                    echo "5) 36"
-                    echo "6) 40"
-                    echo "7) 48"
-                    echo "8) 0 (No offloading)"
-                    read -p "Choose [1-8, default: 1]: " ncmoe_choice
+                if [[ "$model_idx" =~ ^[0-9]+$ ]] && [ "$model_idx" -ge 1 ] && [ "$model_idx" -le "${#models[@]}" ]; then
+                    model_path="${models[$((model_idx-1))]}"
+                    SELECTED_BASENAME=$(basename "$model_path")
                     
-                    case "$ncmoe_choice" in
-                        1) NCMOE_VAL="25" ;;
-                        2) NCMOE_VAL="28" ;;
-                        3) NCMOE_VAL="30" ;;
-                        4) NCMOE_VAL="32" ;;
-                        5) NCMOE_VAL="36" ;;
-                        6) NCMOE_VAL="40" ;;
-                        7) NCMOE_VAL="48" ;;
-                        8) NCMOE_VAL="0" ;;
-                        *) NCMOE_VAL="25" ;;
+                    echo "-----------------------------------"
+                    echo "Configuring: $SELECTED_BASENAME"
+                    
+                    # Remove old block if exists
+                    awk -v sec="[$SELECTED_BASENAME]" '
+                        $0 == sec { in_sec=1; next }
+                        /^\[.*\]/ { in_sec=0 }
+                        !in_sec { print }
+                    ' "$INI_FILE" > "$INI_FILE.tmp" && mv "$INI_FILE.tmp" "$INI_FILE"
+                    
+                    # Cache type
+                    if [[ "$SELECTED_BASENAME" == *"Q6"* ]]; then
+                        CACHE_TYPE="q8_0"
+                    elif [[ "$SELECTED_BASENAME" == *"Q5"* ]]; then
+                        CACHE_TYPE="q5_0"
+                    elif [[ "$SELECTED_BASENAME" == *"Q4"* ]]; then
+                        CACHE_TYPE="q4_0"
+                    else
+                        CACHE_TYPE="q4_0"
+                    fi
+                    
+                    echo ""
+                    echo "Select Context Size for $SELECTED_BASENAME:"
+                    echo "1) 4k (4096)"
+                    echo "2) 8k (8192)"
+                    echo "3) 32k (32768)"
+                    echo "4) 64k (65536)"
+                    echo "5) 128k (131072) [Default]"
+                    echo "6) 256k (262144)"
+                    echo "7) 512k (524288)"
+                    echo "8) 1M (1048576)"
+                    read -p "Choose [1-8, default: 5]: " ctx_choice
+                    
+                    case "$ctx_choice" in
+                        1) CTX_SIZE="4096" ;;
+                        2) CTX_SIZE="8192" ;;
+                        3) CTX_SIZE="32768" ;;
+                        4) CTX_SIZE="65536" ;;
+                        5) CTX_SIZE="131072" ;;
+                        6) CTX_SIZE="262144" ;;
+                        7) CTX_SIZE="524288" ;;
+                        8) CTX_SIZE="1048576" ;;
+                        *) CTX_SIZE="131072" ;;
                     esac
                     
-                    if [ "$NCMOE_VAL" != "0" ]; then
-                        echo "n-cpu-moe = $NCMOE_VAL" >> "$INI_FILE"
-                    fi
+                    # Append to INI
+                    echo "" >> "$INI_FILE"
+                    echo "[$SELECTED_BASENAME]" >> "$INI_FILE"
+                    echo "n-gpu-layers = 99" >> "$INI_FILE"
+                    echo "ctx-size = $CTX_SIZE" >> "$INI_FILE"
+                    echo "cache-type-k = $CACHE_TYPE" >> "$INI_FILE"
+                    echo "cache-type-v = $CACHE_TYPE" >> "$INI_FILE"
                     
-                    if [ "$OS" == "macos" ]; then
-                        TOTAL_THREADS=$(sysctl -n hw.logicalcpu 2>/dev/null || echo 8)
-                    else
-                        TOTAL_THREADS=$(nproc 2>/dev/null || echo 8)
-                    fi
-                    MAX_THREADS=$((TOTAL_THREADS - 4))
-                    if [ "$MAX_THREADS" -lt 6 ]; then
-                        MAX_THREADS=$TOTAL_THREADS
-                    fi
-                    
-                    echo ""
-                    echo "Select the number of threads (-t) for the MoE model:"
-                    echo "Total CPU threads: $TOTAL_THREADS (Recommended max: $MAX_THREADS)"
-                    
-                    T_OPTS=()
-                    idx=1
-                    for (( t=6; t<=MAX_THREADS; t+=2 )); do
-                        T_OPTS+=($t)
-                        if [ "$t" -eq 12 ]; then
-                            echo "$idx) $t [Default]"
+                    # MoE
+                    if [[ "$SELECTED_BASENAME" == *"A3B"* ]] || [[ "$SELECTED_BASENAME" == *"MoE"* ]] || [[ "$SELECTED_BASENAME" == *"moe"* ]]; then
+                        echo ""
+                        echo "MoE model detected. Select the value for -ncmoe (Layers of the model to offload to CPU):"
+                        echo "1) 25"
+                        echo "2) 28"
+                        echo "3) 30 [Default]"
+                        echo "4) 32"
+                        echo "5) 36"
+                        echo "6) 40"
+                        echo "7) 48"
+                        echo "8) 0 (No offloading)"
+                        read -p "Choose [1-8, default: 3]: " ncmoe_choice
+                        
+                        case "$ncmoe_choice" in
+                            1) NCMOE_VAL="25" ;;
+                            2) NCMOE_VAL="28" ;;
+                            3) NCMOE_VAL="30" ;;
+                            4) NCMOE_VAL="32" ;;
+                            5) NCMOE_VAL="36" ;;
+                            6) NCMOE_VAL="40" ;;
+                            7) NCMOE_VAL="48" ;;
+                            8) NCMOE_VAL="0" ;;
+                            *) NCMOE_VAL="30" ;;
+                        esac
+                        
+                        if [ "$NCMOE_VAL" != "0" ]; then
+                            echo "n-cpu-moe = $NCMOE_VAL" >> "$INI_FILE"
+                        fi
+                        
+                        if [ "$OS" == "macos" ]; then
+                            TOTAL_THREADS=$(sysctl -n hw.logicalcpu 2>/dev/null || echo 8)
                         else
-                            echo "$idx) $t"
+                            TOTAL_THREADS=$(nproc 2>/dev/null || echo 8)
                         fi
-                        ((idx++))
-                    done
-                    
-                    if [ ${#T_OPTS[@]} -eq 0 ]; then
-                        T_OPTS+=($TOTAL_THREADS)
-                        echo "1) $TOTAL_THREADS [Default]"
-                        idx=2
-                    fi
-                    
-                    read -p "Choose [1-$((idx-1)), default: 12]: " thread_choice
-                    
-                    if [[ "$thread_choice" =~ ^[0-9]+$ ]] && [ "$thread_choice" -ge 1 ] && [ "$thread_choice" -lt "$idx" ]; then
-                        T_VAL="${T_OPTS[$((thread_choice-1))]}"
-                    else
-                        # Fallback default
-                        T_VAL="12"
-                        if [ "$MAX_THREADS" -lt 12 ]; then
-                            T_VAL="$MAX_THREADS"
+                        MAX_THREADS=$((TOTAL_THREADS - 4))
+                        if [ "$MAX_THREADS" -lt 6 ]; then
+                            MAX_THREADS=$TOTAL_THREADS
                         fi
+                        
+                        echo ""
+                        echo "Select the number of threads (-t) for the MoE model:"
+                        echo "Total CPU threads: $TOTAL_THREADS (Recommended max: $MAX_THREADS)"
+                        
+                        T_OPTS=()
+                        idx=1
+                        for (( t=6; t<=MAX_THREADS; t+=2 )); do
+                            T_OPTS+=($t)
+                            if [ "$t" -eq 12 ]; then
+                                echo "$idx) $t [Default]"
+                            else
+                                echo "$idx) $t"
+                            fi
+                            ((idx++))
+                        done
+                        
+                        if [ ${#T_OPTS[@]} -eq 0 ]; then
+                            T_OPTS+=($TOTAL_THREADS)
+                            echo "1) $TOTAL_THREADS [Default]"
+                            idx=2
+                        fi
+                        
+                        read -p "Choose [1-$((idx-1)), default: 12]: " thread_choice
+                        
+                        if [[ "$thread_choice" =~ ^[0-9]+$ ]] && [ "$thread_choice" -ge 1 ] && [ "$thread_choice" -lt "$idx" ]; then
+                            T_VAL="${T_OPTS[$((thread_choice-1))]}"
+                        else
+                            T_VAL="12"
+                            if [ "$MAX_THREADS" -lt 12 ]; then
+                                T_VAL="$MAX_THREADS"
+                            fi
+                        fi
+                        
+                        echo "threads = $T_VAL" >> "$INI_FILE"
                     fi
-                    
-                    echo "threads = $T_VAL" >> "$INI_FILE"
+                    echo "Configuration saved to models.ini for $SELECTED_BASENAME!"
+                else
+                    echo "Invalid selection."
                 fi
-                echo "Configuration saved to models.ini for $SELECTED_BASENAME!"
-            done
-            
-            echo ""
-            echo "Llama.cpp server will be running in Router Mode at http://localhost:8080"
-            # Using AI_OPT_DIR variable for consistency
-            $AI_OPT_DIR/build/bin/llama-server --models-dir "$MODEL_DIR" --models-preset "$INI_FILE" --models-max 1 -np 1 -fa on -tb 24 --no-warmup --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
-            echo "Server started in background. Logs: llama-server.log"
-            echo "To stop Llama server run: sudo fuser -k 8080/tcp \n or sudo pkill -f llama-server"
-        fi
+            elif [ "$r_mode" == "2" ]; then
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                echo "Current models.ini Configuration"
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                if [ -s "$INI_FILE" ]; then
+                    cat "$INI_FILE"
+                else
+                    echo "models.ini is currently empty."
+                fi
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            elif [ "$r_mode" == "3" ]; then
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                echo "Delete a model from models.ini"
+                echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                if [ -s "$INI_FILE" ]; then
+                    # Extract section headers
+                    configured_models=($(grep "^\[.*\]" "$INI_FILE" | tr -d '[]'))
+                    if [ ${#configured_models[@]} -eq 0 ]; then
+                        echo "No models configured in models.ini."
+                    else
+                        echo "Configured models:"
+                        for i in "${!configured_models[@]}"; do
+                            echo "$((i+1))) ${configured_models[$i]}"
+                        done
+                        echo "$(( ${#configured_models[@]} + 1 ))) Cancel"
+                        read -p "Select a model to delete [1-$(( ${#configured_models[@]} + 1 ))]: " del_idx
+                        
+                        if [[ "$del_idx" =~ ^[0-9]+$ ]] && [ "$del_idx" -ge 1 ] && [ "$del_idx" -le "${#configured_models[@]}" ]; then
+                            DEL_MODEL="${configured_models[$((del_idx-1))]}"
+                            awk -v sec="[$DEL_MODEL]" '
+                                $0 == sec { in_sec=1; next }
+                                /^\[.*\]/ { in_sec=0 }
+                                !in_sec { print }
+                            ' "$INI_FILE" > "$INI_FILE.tmp" && mv "$INI_FILE.tmp" "$INI_FILE"
+                            
+                            # Clean up empty lines that might have been left behind
+                            awk 'NF' "$INI_FILE" > "$INI_FILE.tmp" && mv "$INI_FILE.tmp" "$INI_FILE"
+                            
+                            echo "Removed $DEL_MODEL from models.ini"
+                        else
+                            echo "Deletion cancelled or invalid choice."
+                        fi
+                    fi
+                else
+                    echo "models.ini is currently empty."
+                fi
+            elif [ "$r_mode" == "4" ]; then
+                echo ""
+                echo "Llama.cpp server will be running in Router Mode at http://localhost:8080"
+                # Using AI_OPT_DIR variable for consistency
+                $AI_OPT_DIR/build/bin/llama-server --models-dir "$MODEL_DIR" --models-preset "$INI_FILE" --models-max 1 -np 1 -fa on -tb 24 --no-warmup --metrics --host 127.0.0.1 > llama-server.log 2>&1 &
+                echo "Server started in background. Logs: llama-server.log"
+                echo "To stop Llama server run: sudo fuser -k 8080/tcp \n or sudo pkill -f llama-server"
+                break
+            else
+                echo "Invalid selection."
+            fi
+        done
     fi
 fi
 
