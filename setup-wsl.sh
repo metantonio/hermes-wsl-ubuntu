@@ -70,7 +70,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 if [ "$OS" == "linux" ]; then
     sudo apt update && sudo apt upgrade -y
-    sudo apt install -y git curl build-essential cmake wget htop
+    sudo apt install -y git curl build-essential cmake wget htop pciutils libcurl4-openssl-dev
 elif [ "$OS" == "macos" ]; then
     if ! command -v brew &> /dev/null; then
         echo "Homebrew not found. Please install it from https://brew.sh/"
